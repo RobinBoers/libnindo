@@ -7,7 +7,7 @@ defmodule Nindo.Application do
   @children [
     worker(Nindo.Agent, [])
   ]
-  @opts [strategy: :one_for_one, name: NinDB.Supervisor]
+  @opts [strategy: :one_for_one, name: Nindo.Supervisor]
 
   @impl true
   def start(_type, _args), do:

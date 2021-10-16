@@ -3,6 +3,7 @@ defmodule Nindo.Accounts do
 
   alias NinDB.{Account, Database}
   alias Nindo.{Auth, Agent}
+  import Nindo.Core
 
   # Internal implementation of public API
 
@@ -16,7 +17,7 @@ defmodule Nindo.Accounts do
   def login(username, password) do
     case check_login(username, password) do
       true -> start_agent(username)
-      false -> :wrong_password
+      false -> {:error, "Login failed. You either entered a wrong password or the account you're trying to access doens't exist. "}
     end
   end
 
@@ -24,9 +25,13 @@ defmodule Nindo.Accounts do
     Database.get(Account, id)
   end
 
-  def change(id, key, value) do
-    Database.get(Account, id)
-    |> Database.update(key, value)
+  def change(key, value) do
+    case logged_in() do
+      true ->
+        Database.get(Account, user.id)
+        |> Database.update(key, value)
+      false -> {:error, "Not logged in."}
+    end
   end
 
   # Private methods
@@ -38,6 +43,6 @@ defmodule Nindo.Accounts do
 
   defp start_agent(username) do
     Database.get_by_username(Account, username)
-    |> Agent.start_link()
+    |> Agent.put()
   end
 end
