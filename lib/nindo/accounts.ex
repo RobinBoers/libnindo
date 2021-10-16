@@ -11,7 +11,7 @@ defmodule Nindo.Accounts do
     password = Auth.hash_pass(password)
 
     %Account{username: username, password: password, email: email}
-    |> Database.put()
+    |> Database.put(Account)
   end
 
   def login(username, password) do
@@ -25,13 +25,12 @@ defmodule Nindo.Accounts do
     Database.get(Account, id)
   end
 
-  def change(key, value) do
-    case logged_in() do
-      true ->
-        Database.get(Account, user.id)
-        |> Database.update(key, value)
-      false -> {:error, "Not logged in."}
-    end
+  def change(key, value, logged_in \\ logged_in())
+  def change(_, _, false), do: {:error, "Not logged in."}
+
+  def change(key, value, true) do
+    Database.get(Account, user.id)
+    |> Database.update(key, value)
   end
 
   # Private methods
