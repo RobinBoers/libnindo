@@ -33,6 +33,7 @@ defmodule Nindo.Accounts do
   def change(key, value, true) do
     Database.get(Account, user.id)
     |> Database.update(key, value)
+    update_agent()
   end
 
   # Private methods
@@ -44,6 +45,11 @@ defmodule Nindo.Accounts do
 
   defp start_agent(username) do
     Database.get_by_username(Account, username)
+    |> Agent.put()
+  end
+
+  defp update_agent() do
+    Database.get(Account, user.id)
     |> Agent.put()
   end
 end
