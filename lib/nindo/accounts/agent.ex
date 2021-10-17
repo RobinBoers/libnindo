@@ -15,6 +15,9 @@ defmodule Nindo.Agent do
     Agent.get(@me, fn {_, user} -> user end)
   end
 
+  def put(:logout) do
+    Agent.update(@me, fn _state -> init_state() end)
+  end
   def put(account) do
     Agent.update(@me, fn _state -> set_state(account) end)
   end

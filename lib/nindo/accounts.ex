@@ -21,6 +21,8 @@ defmodule Nindo.Accounts do
     end
   end
 
+  def logout(), do: Agent.put(:logout)
+
   def get(id) do
     Database.get(Account, id)
   end
