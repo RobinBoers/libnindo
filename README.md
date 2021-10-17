@@ -1,11 +1,12 @@
 # Nindo
 
-Feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) in Elixir using Phoenix for the web version and PostgreSQL for the backend.
+A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) in Elixir using Phoenix for the web version and Ecto + PostgreSQL for the backend.
 
-## Clients
+## Features
 
-- **NindoWeb:**  
-web version of Nindo, similar to the original
-
-- **NindoCLI:**  
-text-based commandline application to use Nindo.
+- Encrypted passwords
+- Friends
+- Posts with images
+- Likes
+- Comments
+- DMs

@@ -9,7 +9,7 @@ defmodule Nindo.Posts do
   def new(_, _, _, false), do: {:error, "Not logged in. "}
 
   def new(title, body, image, true) do
-    %Post{author_id: user.id, title: title, body: body, image: image, like_count: 0, comments: %{}, datetime: datetime()}
+    %Post{author_id: user.id, title: title, body: body, image: image, like_count: 0, datetime: datetime()}
     |> Database.put(Post)
   end
 
@@ -18,7 +18,7 @@ defmodule Nindo.Posts do
   end
 
   def get(:user, author_id) do
-    Database.get_by_author(Post, author_id)
+    Database.get_by(:author, Post, author_id)
   end
   def get(:newest, limit) do
     Database.get_all(Post, limit)
