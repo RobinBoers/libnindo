@@ -9,4 +9,4 @@ A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) i
 - Posts with images
 - Likes
 - Comments
-- DMs
+- DMs (Coming soon)
