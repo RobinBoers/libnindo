@@ -44,7 +44,7 @@ defmodule Nindo.Posts do
       true ->
         change_liked(id, :rem)
         change_like_count(id, -1)
-      _ -> :ok
+      _ -> :not_liked
     end
   end
 
@@ -56,7 +56,7 @@ defmodule Nindo.Posts do
     Database.update(post, :like_count, current_likes + amount)
   end
 
-  defp is_liked(id), do: Enum.member?(Accounts.get(user.id).liked, id)
+  defp is_liked(id), do: Enum.member?(get_liked(user.id), id)
   defp get_liked(user_id), do: Accounts.get(user_id).liked
 
   defp change_liked(id, :add), do: Accounts.change(:liked, get_liked(user.id) ++ [id])
