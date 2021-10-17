@@ -6,9 +6,10 @@ defmodule Nindo.Accounts do
   import Nindo.Core
 
   def new(username, password, email) do
-    password = Auth.hash_pass(password)
+    salt = Auth.get_salt()
+    password = Auth.hash_pass(password, salt)
 
-    %Account{username: username, password: password, email: email}
+    %Account{username: username, password: password, email: email, salt: salt}
     |> Database.put(Account)
   end
 
@@ -38,7 +39,8 @@ defmodule Nindo.Accounts do
 
   defp check_login(username, password) do
     hash_db = Database.get_by(:username, Account, username).password
-    Auth.verify_pass(password, hash_db)
+    salt = Database.get_by(:username, Account, username).salt
+    Auth.verify_pass(password, salt, hash_db)
   end
 
   defp start_agent(username) do
