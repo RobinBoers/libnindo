@@ -29,6 +29,10 @@ defmodule Nindo.Accounts do
     Database.get(Account, id)
   end
 
+  def list(limit) do
+    Database.get_all(Account, limit)
+  end
+
   def change(key, value, logged_in \\ logged_in())
   def change(_, _, false), do: {:error, "Not logged in."}
 
