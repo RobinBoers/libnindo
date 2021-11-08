@@ -7,6 +7,8 @@ A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) i
 - Encrypted passwords
 - Friends
 - Posts with images
-- Likes
+- RSS support*
 - Comments
 - DMs (Coming soon)
+
+*Every users posts can be shared via a RSS feed and RSS can be included in your feed.
