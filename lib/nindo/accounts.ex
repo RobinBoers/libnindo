@@ -46,6 +46,8 @@ defmodule Nindo.Accounts do
     update_agent()
   end
 
+  def exists(username), do: user_exists(username)
+
   # Private methods
 
   defp check_login(username, password) do
