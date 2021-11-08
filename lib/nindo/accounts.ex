@@ -29,6 +29,10 @@ defmodule Nindo.Accounts do
     Database.get(Account, id)
   end
 
+  def get_by(:username, username) do
+    Database.get_by(:username, Account, username)
+  end
+
   def list(limit) do
     Database.get_all(Account, limit)
   end
