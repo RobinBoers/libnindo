@@ -9,7 +9,7 @@ defmodule Nindo.Posts do
   def new(_, _, _, false), do: {:error, "Not logged in. "}
 
   def new(title, body, image, true) do
-    %Post{author_id: user.id, title: title, body: body, image: image, like_count: 0, datetime: datetime()}
+    %Post{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
     |> Database.put(Post)
   end
 
