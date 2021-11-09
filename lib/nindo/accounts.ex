@@ -12,7 +12,7 @@ defmodule Nindo.Accounts do
     salt = Auth.get_salt()
     password = Auth.hash_pass(password, salt)
 
-    %Account{username: username, password: password, email: email, salt: salt}
+    %Account{username: username, password: password, email: email, salt: salt, feeds: []}
     |> Database.put(Account)
   end
 
