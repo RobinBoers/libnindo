@@ -20,8 +20,6 @@ defmodule Nindo.Posts do
     Database.get_all(Post, limit)
   end
 
-  def exists?(id) do
-    get(id) !== nil
-  end
+  def exists?(id), do: get(id) !== nil
 
 end

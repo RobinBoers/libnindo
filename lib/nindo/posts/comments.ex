@@ -11,7 +11,7 @@ defmodule Nindo.Comments do
 
   def reply(comment_id, title, body, user) do
     comment = get(comment_id)
-    new(comment.post_id, title, body, user.id)
+    new(comment.post_id, title, body, user)
   end
 
   def get(id) do

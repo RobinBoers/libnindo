@@ -6,4 +6,5 @@ defmodule Nindo.Core do
     |> DateTime.to_naive()
     |> NaiveDateTime.truncate(:second)
   end
+
 end

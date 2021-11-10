@@ -59,4 +59,5 @@ defmodule Nindo.Accounts do
 
     Auth.verify_pass(password, salt, hash_db)
   end
+
 end
