@@ -2,8 +2,7 @@ defmodule Nindo.Accounts do
   @moduledoc false
 
   alias NinDB.{Account, Database}
-  alias Nindo.{Auth, Agent}
-  import Nindo.Core
+  alias Nindo.{Auth}
 
   def new(username, password, email) do
     username = String.trim username
@@ -18,12 +17,10 @@ defmodule Nindo.Accounts do
 
   def login(username, password) do
     case check_login(username, password) do
-      true -> start_agent(username)
+      true -> :ok
       false -> :wrong_password
     end
   end
-
-  def logout(), do: Agent.put(:logout)
 
   def get(id) do
     Database.get(Account, id)
@@ -37,16 +34,13 @@ defmodule Nindo.Accounts do
     Database.get_all(Account, limit)
   end
 
-  def change(key, value, logged_in \\ logged_in())
-  def change(_, _, false), do: {:error, "Not logged in."}
-
-  def change(key, value, true) do
-    Database.get(Account, user.id)
+  def change(key, value, user) do
+    Account
+    |> Database.get(user.id)
     |> Database.update(key, value)
-    update_agent()
   end
 
-  def exists(username), do: user_exists(username)
+  def exists?(username), do: user_exists(username)
 
   # Private methods
 
@@ -64,15 +58,5 @@ defmodule Nindo.Accounts do
     salt = Database.get_by(:username, Account, username).salt
 
     Auth.verify_pass(password, salt, hash_db)
-  end
-
-  defp start_agent(username) do
-    Database.get_by(:username, Account, username)
-    |> Agent.put()
-  end
-
-  defp update_agent() do
-    Database.get(Account, user.id)
-    |> Agent.put()
   end
 end

@@ -2,13 +2,9 @@ defmodule Nindo.Posts do
   @moduledoc false
 
   alias NinDB.{Database, Post}
-  alias Nindo.{Accounts}
   import Nindo.Core
 
-  def new(title, body, image \\ nil, logged_in \\ logged_in())
-  def new(_, _, _, false), do: {:error, "Not logged in. "}
-
-  def new(title, body, image, true) do
+  def new(title, body, image, user) do
     %Post{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
     |> Database.put(Post)
   end
@@ -22,6 +18,10 @@ defmodule Nindo.Posts do
   end
   def get(:newest, limit) do
     Database.get_all(Post, limit)
+  end
+
+  def exists?(id) do
+    get(id) !== nil
   end
 
 end

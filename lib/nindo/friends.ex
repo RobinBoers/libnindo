@@ -2,12 +2,8 @@ defmodule Nindo.Friends do
   @moduledoc false
 
   alias NinDB.{Database, Friend}
-  import Nindo.Core
 
-  def add(id, logged_in \\ logged_in())
-  def add(_, false), do: {:error, "Not logged in."}
-
-  def add(id, true) do
+  def add(id, user) do
     %Friend{friend_id: id, user_id: user.id}
     |> Database.put(Friend)
   end
