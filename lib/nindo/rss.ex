@@ -10,6 +10,10 @@ defmodule Nindo.RSS do
     "https://" <> source <> "/feeds/posts/default?alt=rss"
   end
 
+  def detect_favicon(source) do
+    "https://" <> source <> "/favicon.ico"
+  end
+
   def parse_feed(source) do
     {:ok, %HTTPoison.Response{body: body}} =
       HTTPoison.get(source)
