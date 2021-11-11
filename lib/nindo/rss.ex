@@ -23,7 +23,7 @@ defmodule Nindo.RSS do
       %{
         author: entry.author,
         body: safe(entry.summary),
-        datetime: datetime(),
+        datetime: from_rfc822(entry.updated),
         image: entry.image,
         title: entry.title,
       }
