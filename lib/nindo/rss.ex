@@ -15,11 +15,12 @@ defmodule Nindo.RSS do
   end
 
   def parse_feed(source) do
-    {:ok, %HTTPoison.Response{body: body}} =
-      HTTPoison.get(source)
-    {:ok, feed, _} = FeederEx.parse(body)
-
-    feed
+    case HTTPoison.get(source) do
+      {:ok, %HTTPoison.Response{body: body}} ->
+        {:ok, feed, _} = FeederEx.parse(body)
+        feed
+      {:error, _error} -> raise "Invalid feed"
+    end
   end
 
   def generate_posts(feed) do
