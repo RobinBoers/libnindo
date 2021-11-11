@@ -16,6 +16,9 @@ defmodule Nindo.MixProject do
   defp deps, do: [
     {:bcrypt_elixir, "~> 2.3.0"},
     {:nin_db, path: "../nindb"},
-    {:jason, "~> 1.2"},
+    {:feeder_ex, "~> 1.1.0"},
+    {:rss, "~> 0.2.1"},
+    {:httpoison, "~> 1.8"},
+    {:calendar, "~> 1.0.0"},
   ]
 end
