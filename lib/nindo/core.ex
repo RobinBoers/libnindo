@@ -32,9 +32,11 @@ defmodule Nindo.Core do
   end
 
   def from_rfc822(datetime) do
-    datetime
-    |> Parse.rfc2822_utc()
-    |> DateTime.to_naive()
+    {:ok, datetime} =
+      datetime
+      |> Parse.rfc2822_utc()
+
+    DateTime.to_naive(datetime)
   end
 
   # User and session managment
