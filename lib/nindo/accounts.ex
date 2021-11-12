@@ -4,14 +4,14 @@ defmodule Nindo.Accounts do
   alias NinDB.{Account, Database}
   alias Nindo.{Auth}
 
-  def new(username, password, email) do
+  def new(username, password, email, image \\ nil) do
     username = String.trim username
     password = String.trim password
 
     salt = Auth.get_salt()
     password = Auth.hash_pass(password, salt)
 
-    %{username: username, password: password, email: email, salt: salt, feeds: []}
+    %{username: username, password: password, email: email, salt: salt, profile_picture: image, feeds: []}
     |> Database.put(Account)
   end
 
