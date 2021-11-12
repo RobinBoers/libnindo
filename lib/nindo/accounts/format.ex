@@ -4,13 +4,11 @@ defmodule Nindo.Format do
   alias Nindo.{Accounts}
   import Nindo.Core
 
-  @default_profile_picture "https://www.multisignaal.nl/wp-content/uploads/2021/08/blank-profile-picture-973460_1280.png"
-
   @not_available "<i>No account description available.</i>"
 
   def profile_picture(username) do
     case Accounts.get_by(:username, username).profile_picture do
-      nil             ->    @default_profile_picture
+      nil             ->    default_profile_picture(username)
       profile_picture ->    profile_picture
     end
   end
@@ -29,6 +27,6 @@ defmodule Nindo.Format do
     end
   end
 
-  def default_profile_picture(), do: @default_profile_picture
+  def default_profile_picture(username), do: "https://avatars.dicebear.com/api/identicon/#{username}.svg"
 
 end
