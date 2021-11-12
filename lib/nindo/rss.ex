@@ -17,20 +17,20 @@ defmodule Nindo.RSS do
   def parse_feed(source) do
     case HTTPoison.get(source) do
       {:ok, %HTTPoison.Response{body: body}} ->
-        {:ok, feed, _} = FeederEx.parse(body)
+        {:ok, feed} = FastRSS.parse(body)
         feed
       {:error, _error} -> raise "Invalid feed"
     end
   end
 
   def generate_posts(feed) do
-    Enum.map(feed.entries, fn entry ->
+    Enum.map(feed["items"], fn entry ->
       %{
-        author: entry.author,
-        body: safe(entry.summary),
-        datetime: from_rfc822(entry.updated),
-        image: entry.image,
-        title: entry.title,
+        author: entry["author"],
+        body: HtmlSanitizeEx.basic_html(entry["description"]) |> safe(),
+        datetime: from_rfc822(entry["pub_date"]),
+        image: entry["media"]["thumbnail"]["attrs"]["url"],
+        title: entry["title"],
       }
     end)
   end
