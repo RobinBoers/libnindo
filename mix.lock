@@ -22,6 +22,7 @@
   "rss": {:hex, :rss, "0.2.1", "034f2fe5250a490862e692eb34a31bb5c142913c2fe0fb093e1fd982f010e15d", [:mix], [], "hexpm", "1af49c787fc789740a0fa7e0e197a7cb779a63c4eb703f013fea400126eac1f2"},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.6", "cf344f5692c82d2cd7554f5ec8fd961548d4fd09e7d22f5b62482e5aeaebd4b0", [:make, :mix, :rebar3], [], "hexpm", "bdb0d2471f453c88ff3908e7686f86f9be327d065cc1ec16fa4540197ea04680"},
   "telemetry": {:hex, :telemetry, "1.0.0", "0f453a102cdf13d506b7c0ab158324c337c41f1cc7548f0bc0e130bbf0ae9452", [:rebar3], [], "hexpm", "73bc09fa59b4a0284efb4624335583c528e07ec9ae76aca96ea0673850aec57a"},
+  "the_big_username_blacklist": {:hex, :the_big_username_blacklist, "0.1.2", "a2622f06a26279c9cd5216ada872c2dceb63bc2ade5c8714df0de65a24aa985c", [:mix], [], "hexpm", "9f411601209758d4a5ef9e247a1e7b908c0cd05e78171f51f07e68b7afb038fe"},
   "tzdata": {:hex, :tzdata, "1.1.1", "20c8043476dfda8504952d00adac41c6eda23912278add38edc140ae0c5bcc46", [:mix], [{:hackney, "~> 1.17", [hex: :hackney, repo: "hexpm", optional: false]}], "hexpm", "a69cec8352eafcd2e198dea28a34113b60fdc6cb57eb5ad65c10292a6ba89787"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.7.0", "bc84380c9ab48177092f43ac89e4dfa2c6d62b40b8bd132b1059ecc7232f9a78", [:rebar3], [], "hexpm", "25eee6d67df61960cf6a794239566599b09e17e668d3700247bc498638152521"},
 }

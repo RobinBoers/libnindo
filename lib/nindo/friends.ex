@@ -4,7 +4,7 @@ defmodule Nindo.Friends do
   alias NinDB.{Database, Friend}
 
   def add(id, user) do
-    %Friend{friend_id: id, user_id: user.id}
+    %{friend_id: id, user_id: user.id}
     |> Database.put(Friend)
   end
 

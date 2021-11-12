@@ -5,7 +5,7 @@ defmodule Nindo.Posts do
   import Nindo.Core
 
   def new(title, body, image, user) do
-    %Post{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
+    %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
     |> Database.put(Post)
   end
 

@@ -5,7 +5,7 @@ defmodule Nindo.Comments do
   import Nindo.Core
 
   def new(id, title, body, user, parent \\ nil) do
-    %Comment{post_id: id, author_id: user.id, parent: parent, title: title, body: body, datetime: datetime()}
+    %{post_id: id, author_id: user.id, parent: parent, title: title, body: body, datetime: datetime()}
     |> Database.put(Comment)
   end
 
