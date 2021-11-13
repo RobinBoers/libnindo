@@ -1,7 +1,7 @@
 defmodule Nindo.RSS do
   @moduledoc false
 
-  alias Nindo.{Posts, Format}
+  alias Nindo.{Accounts, Posts, Feeds, Format}
   import Nindo.Core
 
   # Methods to parse feeds
@@ -19,7 +19,7 @@ defmodule Nindo.RSS do
       {:ok, %HTTPoison.Response{body: body}} ->
         {:ok, feed} = FastRSS.parse(body)
         feed
-      {:error, _error} -> raise "Invalid feed"
+      error -> error
     end
   end
 
@@ -63,6 +63,26 @@ defmodule Nindo.RSS do
 
   defdelegate generate_feed(channel, items), to: RSS, as: :feed
 
+  # Methods to construct Nindo feeds
 
+  def fetch_posts({username, _, _}) do
+    account = Accounts.get_by(:username, username)
+    sources = Feeds.get(account)
+
+    posts =
+      sources
+      |> Enum.map(fn source -> Task.async(fn ->
+
+        source
+        |> parse_feed()
+        |> generate_posts()
+
+      end) end)
+      |> Task.await_many()
+      |> List.flatten()
+      |> Enum.sort_by(&(&1.datetime), {:desc, NaiveDateTime})
+
+    {username, sources, posts}
+  end
 
 end

@@ -10,6 +10,7 @@ defmodule Nindo.MixProject do
   ]
 
   def application, do: [
+    mod: {Nindo.Application, []},
     extra_applications: [:logger],
   ]
 
