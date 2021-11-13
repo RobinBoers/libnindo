@@ -31,6 +31,7 @@ defmodule Nindo.RSS do
         datetime: from_rfc822(entry["pub_date"]),
         image: entry["media"]["thumbnail"]["attrs"]["url"],
         title: entry["title"],
+        link: entry["link"],
       }
     end)
   end
