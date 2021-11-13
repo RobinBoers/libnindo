@@ -6,6 +6,13 @@ defmodule Nindo.RSS do
 
   # Methods to parse feeds
 
+  def detect_feed("blogger", source), do:
+    {"https://" <> source <> "/feeds/posts/default?alt=rss&max-results=5", "https://" <> source <> "/feeds/posts/default?alt=rss&max-results=0"}
+  def detect_feed("wordpress", source), do:
+    {"https://" <> source <> "/feed/", "https://" <> source <> "/feed/"}
+  def detect_feed(_, source), do:
+    {"https://" <> source, "https://" <> source}
+
   def detect_feed(source) do
     "https://" <> source <> "/feeds/posts/default?alt=rss"
   end
@@ -26,7 +33,7 @@ defmodule Nindo.RSS do
   def generate_posts(feed) do
     Enum.map(feed["items"], fn entry ->
       %{
-        author: entry["author"],
+        author: feed["title"],
         body: HtmlSanitizeEx.basic_html(entry["description"]) |> safe(),
         datetime: from_rfc822(entry["pub_date"]),
         image: entry["media"]["thumbnail"]["attrs"]["url"],
