@@ -6,16 +6,19 @@ defmodule Nindo.RSS do
 
   # Methods to parse feeds
 
-  def detect_feed("blogger", source), do:
-    {"https://" <> source <> "/feeds/posts/default?alt=rss&max-results=5", "https://" <> source <> "/feeds/posts/default?alt=rss&max-results=0"}
-  def detect_feed("wordpress", source), do:
-    {"https://" <> source <> "/feed/", "https://" <> source <> "/feed/"}
-  def detect_feed(_, source), do:
-    {"https://" <> source, "https://" <> source}
-
+  @deprecated "use detect_feed/2 instead"
   def detect_feed(source) do
     "https://" <> source <> "/feeds/posts/default?alt=rss"
   end
+
+  def detect_feed("blogger", source),     do: "https://" <> source <> "/feeds/posts/default?alt=rss&max-results=5"
+  def detect_feed("wordpress", source),   do: "https://" <> source <> "/feed/"
+  def detect_feed("atom", source),        do: atom_to_rss("https://" <> source)
+  def detect_feed("youtube", source) do
+    [_, _, channel] = String.split(source, "/")
+    atom_to_rss("https://www.youtube.com/feeds/videos.xml?channel_id=#{channel}")
+  end
+  def detect_feed(_, source),             do: "https://" <> source
 
   def detect_favicon(source) do
     "https://" <> source <> "/favicon.ico"
@@ -24,8 +27,10 @@ defmodule Nindo.RSS do
   def parse_feed(source) do
     case HTTPoison.get(source) do
       {:ok, %HTTPoison.Response{body: body}} ->
-        {:ok, feed} = FastRSS.parse(body)
-        feed
+        case FastRSS.parse(body) do
+          {:ok, feed} -> feed
+          error -> error
+        end
       error -> error
     end
   end
@@ -70,6 +75,10 @@ defmodule Nindo.RSS do
   end
 
   defdelegate generate_feed(channel, items), to: RSS, as: :feed
+
+  def atom_to_rss(source) do
+    "https://feedmix.novaclic.com/atom2rss.php?source=" <> URI.encode(source)
+  end
 
   # Methods to construct Nindo feeds
 

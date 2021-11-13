@@ -1,7 +1,7 @@
 defmodule Nindo.Feeds do
   @moduledoc false
 
-  alias Nindo.{Accounts, FeedAgent}
+  alias Nindo.{Accounts, FeedAgent, RSS}
   alias NinDB.{Database, Account}
 
   def add(feed, user) do
@@ -21,7 +21,9 @@ defmodule Nindo.Feeds do
 
   def get(user) do
     user.feeds
-    |> Enum.map(fn feed -> feed["feed"] end)
+    |> Enum.map(fn feed ->
+      RSS.detect_feed(feed["type"], feed["feed"])
+    end)
   end
 
   # Caching feeds
