@@ -2,6 +2,7 @@ defmodule Nindo.RSS do
   @moduledoc false
 
   alias Nindo.{Accounts, Posts, Feeds, Format}
+  alias Nindo.RSS.YouTube
   import Nindo.Core
 
   # Methods to parse feeds
@@ -13,11 +14,11 @@ defmodule Nindo.RSS do
 
   def detect_feed("blogger", source),     do: "https://" <> source <> "/feeds/posts/default?alt=rss&max-results=5"
   def detect_feed("wordpress", source),   do: "https://" <> source <> "/feed/"
-  def detect_feed("atom", source),        do: atom_to_rss("https://" <> source)
   def detect_feed("youtube", source) do
     [_, _, channel] = String.split(source, "/")
     atom_to_rss("https://www.youtube.com/feeds/videos.xml?channel_id=#{channel}")
   end
+  def detect_feed("atom", source),        do: atom_to_rss("https://" <> source)
   def detect_feed(_, source),             do: "https://" <> source
 
   def detect_favicon(source) do
@@ -100,6 +101,49 @@ defmodule Nindo.RSS do
       |> Enum.sort_by(&(&1.datetime), {:desc, NaiveDateTime})
 
     {username, sources, posts}
+  end
+
+  # Methods to handle YT api stuff
+
+  defmodule YouTube do
+    @moduledoc false
+
+    @key "AIzaSyCDm7TOdKFCZPEzPcPR9OPu_DwcR9TzYOk"
+
+    def to_channel_link(url) do
+      [_, type, channel] = String.split(url, "/")
+
+      channel_id =
+        case type do
+          "c" -> YouTube.get_from_custom(url)
+          "user" -> YouTube.get_from_username(channel)
+          _ -> channel
+        end
+
+      "www.youtube.com/channel/#{channel_id}"
+    end
+
+    def get_from_custom(source) do
+      data = parse_json("https://youtube.googleapis.com/youtube/v3/search?q=#{source}&part=id&type=channel&fields=items(id(kind,channelId))&max_results=1&key=#{@key}")
+      hd(data["items"])["id"]["channelId"]
+    end
+
+    def get_from_username(username) do
+      data = parse_json("https://www.googleapis.com/youtube/v3/channels?forUsername=#{username}&part=id&key=#{@key}")
+      hd(data["items"])["id"]
+    end
+
+    def parse_json(source) do
+      case HTTPoison.get(source) do
+        {:ok, %HTTPoison.Response{body: body}} ->
+          case Jason.decode(body) do
+            {:ok, data} -> data
+            error -> error
+          end
+        error -> error
+      end
+    end
+
   end
 
 end

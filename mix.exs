@@ -22,5 +22,6 @@ defmodule Nindo.MixProject do
     {:rss, "~> 0.2.1"},
     {:httpoison, "~> 1.8"},
     {:calendar, "~> 1.0.0"},
+    {:jason, "~> 1.2"},
   ]
 end
