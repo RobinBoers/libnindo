@@ -91,9 +91,11 @@ defmodule Nindo.Feeds do
   end
 
   defp update_agent(user) do
-    user
-    |> FeedAgent.get_pid()
-    |> FeedAgent.update()
+    Task.async(fn ->
+      user
+      |> FeedAgent.get_pid()
+      |> FeedAgent.update()
+    end)
   end
 
 end
