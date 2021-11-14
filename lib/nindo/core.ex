@@ -49,4 +49,6 @@ defmodule Nindo.Core do
     Accounts.get conn.private.plug_session["user_id"]
   end
 
+  def debug_mode(), do: true
+
 end
