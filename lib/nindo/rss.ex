@@ -41,7 +41,7 @@ defmodule Nindo.RSS do
     |> Enum.map(fn entry -> Task.async(fn ->
         %{
           author: feed["title"],
-          body: HtmlSanitizeEx.basic_html(entry["description"]) |> safe(),
+          body: HtmlSanitizeEx.basic_html(entry["description"]),
           datetime: from_rfc822(entry["pub_date"]),
           image: entry["media"]["thumbnail"]["attrs"]["url"],
           title: entry["title"],
