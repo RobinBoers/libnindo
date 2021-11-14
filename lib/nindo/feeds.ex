@@ -30,16 +30,16 @@ defmodule Nindo.Feeds do
   end
 
   def follow(person, user) do
-    followed = user.followed
-    if person not in followed do
-      Accounts.change(:followed, [person | followed], user)
+    following = user.following
+    if person not in following do
+      Accounts.change(:following, [person | following], user)
     end
   end
 
   def unfollow(person, user) do
-    followed = user.followed
-    if person in followed do
-      Accounts.change(:followed, followed -- [person], user)
+    following = user.following
+    if person in following do
+      Accounts.change(:following, following -- [person], user)
     end
   end
 
