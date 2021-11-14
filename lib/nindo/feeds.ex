@@ -29,6 +29,20 @@ defmodule Nindo.Feeds do
     end)
   end
 
+  def follow(person, user) do
+    followed = user.followed
+    if person not in followed do
+      Accounts.change(:followed, [person | followed], user)
+    end
+  end
+
+  def unfollow(person, user) do
+    followed = user.followed
+    if person in followed do
+      Accounts.change(:followed, followed -- [person], user)
+    end
+  end
+
   # Caching feeds
 
   def cache_feed() do
