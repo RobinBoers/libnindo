@@ -9,6 +9,7 @@ defmodule Nindo.Feeds do
     if feed not in feeds do
       Accounts.change(:feeds, [feed | feeds], user)
     end
+    update_agent(user)
   end
 
   def remove(feed, user) do
@@ -17,6 +18,7 @@ defmodule Nindo.Feeds do
     if feed in feeds do
       Accounts.change(:feeds, feeds -- [feed], user)
     end
+    update_agent(user)
   end
 
   def get(user) do
@@ -34,6 +36,7 @@ defmodule Nindo.Feeds do
     if person not in following do
       Accounts.change(:following, [person | following], user)
     end
+    update_agent(user)
   end
 
   def unfollow(person, user) do
@@ -41,6 +44,7 @@ defmodule Nindo.Feeds do
     if person in following do
       Accounts.change(:following, following -- [person], user)
     end
+    update_agent(user)
   end
 
   # Caching feeds
@@ -84,6 +88,12 @@ defmodule Nindo.Feeds do
       {key, val} -> {key, val}
     end)
     |> Enum.into(%{})
+  end
+
+  defp update_agent(user) do
+    user
+    |> FeedAgent.get_pid()
+    |> FeedAgent.update()
   end
 
 end

@@ -91,7 +91,7 @@ defmodule Nindo.RSS do
     account = Accounts.get_by(:username, username)
     sources = Feeds.get(account)
 
-    posts =
+    rss_posts =
       sources
       |> Enum.map(fn {type, source} -> Task.async(fn ->
 
@@ -102,6 +102,24 @@ defmodule Nindo.RSS do
       end) end)
       |> Task.await_many()
       |> List.flatten()
+
+    user_posts =
+      account.following
+      |> Enum.map(fn username -> Task.async(fn ->
+
+        account = Accounts.get_by(:username, username)
+        posts = Posts.get(:user, account.id)
+
+        Enum.map(posts, fn post ->
+          Map.from_struct(post)
+        end)
+
+      end) end)
+      |> Task.await_many()
+      |> List.flatten()
+
+    posts =
+      user_posts ++ rss_posts
       |> Enum.sort_by(&(&1.datetime), {:desc, NaiveDateTime})
 
     {username, sources, posts}
