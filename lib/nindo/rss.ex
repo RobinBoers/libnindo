@@ -36,17 +36,21 @@ defmodule Nindo.RSS do
     end
   end
 
-  def generate_posts(feed) do
-    Enum.map(feed["items"], fn entry ->
-      %{
-        author: feed["title"],
-        body: HtmlSanitizeEx.basic_html(entry["description"]) |> safe(),
-        datetime: from_rfc822(entry["pub_date"]),
-        image: entry["media"]["thumbnail"]["attrs"]["url"],
-        title: entry["title"],
-        link: entry["link"],
-      }
+  def generate_posts(feed, type \\ nil) do
+    feed["items"]
+    |> Enum.map(fn entry -> Task.async(fn ->
+        %{
+          author: feed["title"],
+          body: HtmlSanitizeEx.basic_html(entry["description"]) |> safe(),
+          datetime: from_rfc822(entry["pub_date"]),
+          image: entry["media"]["thumbnail"]["attrs"]["url"],
+          title: entry["title"],
+          link: entry["link"],
+          type: type,
+        }
+      end)
     end)
+    |> Task.await_many()
   end
 
   # Methods to generate feeds
@@ -89,11 +93,11 @@ defmodule Nindo.RSS do
 
     posts =
       sources
-      |> Enum.map(fn source -> Task.async(fn ->
+      |> Enum.map(fn {type, source} -> Task.async(fn ->
 
         source
         |> parse_feed()
-        |> generate_posts()
+        |> generate_posts(type)
 
       end) end)
       |> Task.await_many()

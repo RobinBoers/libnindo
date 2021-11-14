@@ -22,7 +22,10 @@ defmodule Nindo.Feeds do
   def get(user) do
     user.feeds
     |> Enum.map(fn feed ->
-      RSS.detect_feed(feed["type"], feed["feed"])
+      type = feed["type"]
+      feed = feed["feed"]
+
+      {type, RSS.detect_feed(type, feed)}
     end)
   end
 
@@ -36,7 +39,10 @@ defmodule Nindo.Feeds do
     )
 
     Database.list(Account)
-    |> Enum.each(fn user -> cache(user) end)
+    |> Enum.map(fn user -> Task.async(fn ->
+      cache(user)
+    end) end)
+    |> Task.await_many()
   end
 
   def cache(user) do
