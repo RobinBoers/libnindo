@@ -69,6 +69,14 @@ defmodule Nindo.Feeds do
     end
   end
 
+  def update_agent(user) do
+    Task.async(fn ->
+      user
+      |> FeedAgent.get_pid()
+      |> FeedAgent.update()
+    end)
+  end
+
   # Private methods
 
   defp empty_to_nil(map) do
@@ -78,14 +86,6 @@ defmodule Nindo.Feeds do
       {key, val} -> {key, val}
     end)
     |> Enum.into(%{})
-  end
-
-  defp update_agent(user) do
-    Task.async(fn ->
-      user
-      |> FeedAgent.get_pid()
-      |> FeedAgent.update()
-    end)
   end
 
 end

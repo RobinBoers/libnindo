@@ -2,11 +2,14 @@ defmodule Nindo.Posts do
   @moduledoc false
 
   alias NinDB.{Database, Post}
+  alias Nindo.{Feeds}
   import Nindo.Core
 
   def new(title, body, image, user) do
     %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
     |> Database.put(Post)
+
+    Feeds.update_agent(user)
   end
 
   def get(id) do
