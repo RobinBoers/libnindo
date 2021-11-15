@@ -6,12 +6,8 @@ defmodule Nindo.Posts do
   import Nindo.Core
 
   def new(title, body, image, user) do
-      result =
-        %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
-        |> Database.put(Post)
-
-      Feeds.update_agent(user)
-      result
+    %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
+    |> Database.put(Post)
   end
 
   def get(id) do
