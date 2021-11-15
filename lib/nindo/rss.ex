@@ -1,7 +1,7 @@
 defmodule Nindo.RSS do
   @moduledoc false
 
-  alias Nindo.{Accounts, Posts, Feeds, Format}
+  alias Nindo.{Accounts, Posts, Format}
   alias Nindo.RSS.YouTube
   import Nindo.Core
 
