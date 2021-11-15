@@ -2,7 +2,6 @@ defmodule Nindo.Posts do
   @moduledoc false
 
   alias NinDB.{Database, Post}
-  alias Nindo.{Feeds}
   import Nindo.Core
 
   def new(title, body, image, user) do

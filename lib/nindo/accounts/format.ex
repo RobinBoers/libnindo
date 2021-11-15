@@ -28,6 +28,6 @@ defmodule Nindo.Format do
   end
 
   def default_profile_picture(username), do: "https://avatars.dicebear.com/api/identicon/#{username}.svg?scale=80&b=%23E5E7EB"
-  def default_profile_picture(), do: "https://www.multisignaal.nl/wp-content/uploads/2021/08/blank-profile-picture-973460_1280.png"
+  def default_profile_picture(), do: "/images/empty.png"
 
 end
