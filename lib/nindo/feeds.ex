@@ -1,7 +1,7 @@
 defmodule Nindo.Feeds do
   @moduledoc false
 
-  alias Nindo.{Accounts, FeedAgent, RSS}
+  alias Nindo.{Accounts, FeedAgent}
   alias NinDB.{Database, Account}
 
   def add(feed, user) do
@@ -19,16 +19,6 @@ defmodule Nindo.Feeds do
       Accounts.change(:feeds, feeds -- [feed], user)
     end
     update_agent(user)
-  end
-
-  def get(user) do
-    user.feeds
-    |> Enum.map(fn feed ->
-      type = feed["type"]
-      feed = feed["feed"]
-
-      {type, RSS.detect_feed(type, feed)}
-    end)
   end
 
   def follow(person, user) do

@@ -14,11 +14,11 @@ defmodule Nindo.FeedAgent do
   # Feed managment
 
   def start_link(username) do
-    Agent.start_link(fn -> {username, nil, nil} end)
+    Agent.start_link(fn -> {username, nil} end)
   end
 
   def get_posts(pid) do
-    {_username, _sources, posts} = get(pid)
+    {_username, posts} = get(pid)
     posts
   end
 

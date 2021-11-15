@@ -5,28 +5,31 @@ defmodule Nindo.RSS do
   alias Nindo.RSS.YouTube
   import Nindo.Core
 
+  @default_source %{"type" => "custom", "icon" => "/images/rss.png"}
+
   # Methods to parse feeds
 
   @deprecated "use detect_feed/2 instead"
-  def detect_feed(source) do
-    "https://" <> source <> "/feeds/posts/default?alt=rss"
+  def detect_feed(url) do
+    "https://" <> url <> "/feeds/posts/default?alt=rss"
   end
 
-  def detect_feed("blogger", source),     do: "https://" <> source <> "/feeds/posts/default?alt=rss&max-results=5"
-  def detect_feed("wordpress", source),   do: "https://" <> source <> "/feed/"
-  def detect_feed("youtube", source) do
-    [_, _, channel] = String.split(source, "/")
+  def detect_feed("blogger", url),     do: "https://" <> url <> "/feeds/posts/default?alt=rss&max-results=5"
+  def detect_feed("wordpress", url),   do: "https://" <> url <> "/feed/"
+  def detect_feed("youtube", url) do
+    [_, _, channel] = String.split(url, "/")
     atom_to_rss("https://www.youtube.com/feeds/videos.xml?channel_id=#{channel}")
   end
-  def detect_feed("atom", source),        do: atom_to_rss("https://" <> source)
-  def detect_feed(_, source),             do: "https://" <> source
+  def detect_feed("atom", url),        do: atom_to_rss("https://" <> url)
+  def detect_feed(_, url),             do: "https://" <> url
 
-  def detect_favicon(source) do
-    "https://" <> source <> "/favicon.ico"
+  def detect_favicon(url) do
+    "https://" <> url <> "/favicon.ico"
   end
 
-  def parse_feed(source) do
-    case HTTPoison.get(source) do
+  def parse_feed(url, type) do
+    url = detect_feed(type, url)
+    case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{body: body}} ->
         case FastRSS.parse(body) do
           {:ok, feed} -> feed
@@ -36,21 +39,26 @@ defmodule Nindo.RSS do
     end
   end
 
-  def generate_posts(feed, type \\ nil) do
+  def generate_posts(feed, source \\ @default_source) do
     feed["items"]
     |> Enum.map(fn entry -> Task.async(fn ->
         %{
           author: feed["title"],
-          body: HtmlSanitizeEx.basic_html(entry["description"]),
+          body: HtmlSanitizeEx.no_images(entry["description"]),
           datetime: from_rfc822(entry["pub_date"]),
           image: entry["media"]["thumbnail"]["attrs"]["url"],
           title: entry["title"],
           link: entry["link"],
-          type: type,
+          type: source["type"],
+          icon: source["icon"]
         }
       end)
     end)
     |> Task.await_many()
+  end
+
+  def atom_to_rss(source) do
+    "https://feedmix.novaclic.com/atom2rss.php?source=" <> URI.encode(source)
   end
 
   # Methods to generate feeds
@@ -81,23 +89,18 @@ defmodule Nindo.RSS do
 
   defdelegate generate_feed(channel, items), to: RSS, as: :feed
 
-  def atom_to_rss(source) do
-    "https://feedmix.novaclic.com/atom2rss.php?source=" <> URI.encode(source)
-  end
-
   # Methods to construct Nindo feeds
 
-  def fetch_posts({username, _, _}) do
+  def fetch_posts({username, _}) do
     account = Accounts.get_by(:username, username)
-    sources = Feeds.get(account)
 
     rss_posts =
-      sources
-      |> Enum.map(fn {type, source} -> Task.async(fn ->
+      account.feeds
+      |> Enum.map(fn source -> Task.async(fn ->
 
-        source
-        |> parse_feed()
-        |> generate_posts(type)
+        source["feed"]
+        |> parse_feed(source["type"])
+        |> generate_posts(source)
 
       end) end)
       |> Task.await_many()
@@ -122,7 +125,18 @@ defmodule Nindo.RSS do
       user_posts ++ rss_posts
       |> Enum.sort_by(&(&1.datetime), {:desc, NaiveDateTime})
 
-    {username, sources, posts}
+    {username, posts}
+  end
+
+  def generate_source(feed, type, url) do
+    %{
+      "title" => feed["title"],
+      "feed" => url,
+      "type" => type,
+      "icon" => detect_favicon(
+        URI.parse("https://" <> url).authority
+      )
+    }
   end
 
   # Methods to handle YT api stuff
