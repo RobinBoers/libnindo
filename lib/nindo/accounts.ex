@@ -19,6 +19,7 @@ defmodule Nindo.Accounts do
     case check_login(username, password) do
       true -> :ok
       false -> :wrong_password
+      _ -> :no_user_found
     end
   end
 
