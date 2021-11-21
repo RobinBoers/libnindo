@@ -76,6 +76,7 @@ defmodule Nindo.Feeds do
               {{source["feed"], entry["title"], entry["pub_date"]}, entry}
             end)
 
+          Cachex.put(:rss, source["feed"], feed)
           Cachex.put_many(:rss, items)
         end)
       end)
