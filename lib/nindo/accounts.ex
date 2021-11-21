@@ -1,5 +1,7 @@
 defmodule Nindo.Accounts do
-  @moduledoc false
+  @moduledoc """
+    Manage Nindo accounts
+  """
 
   alias NinDB.{Account, Database}
   alias Nindo.{Auth}

@@ -20,6 +20,6 @@ A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) i
 This version of Nindo consists of a few applications:
 
 - NinDB: Managing database, changesets and schemas
-- Nindo (also called Nindo Core): Managing accounts, posts and all the other crap
+- Nindo: Managing accounts, posts and all the other crap
 - NindoPhx: Web client for Nindo
 - NindoText: Terminal client for Nindo

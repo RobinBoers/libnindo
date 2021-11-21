@@ -1,5 +1,26 @@
 defmodule Nindo.FeedAgent do
-  @moduledoc false
+  @moduledoc """
+    Cache and update homepage feeds
+
+    The FeedAgent automatically starts when starting Nindo. It caches the homepage feed for every user in the database.
+
+    It has 2 modes:
+
+    - Cache
+    - Lookup
+
+  ### Cache mode
+
+    When starting in cache mode, the agent gets and parses all RSS and user feeds. For every user in the database, a cache mode agent is started. It can then be called to update it's state (get and parse again), or just to retrieve the state.
+
+    To fetch and parse all sources, and construct the feed `Nindo.RSS.fetch_posts/1` is used.
+
+  ### Lookup mode
+
+    FeedAgent is only started once in lookup mode, in `Nindo.Feeds.cache_user_feed/0`
+    In lookup mode it stores the pid for every agent started in cache mode. It can then be called to get the pid for a specific username.
+
+  """
 
   @me __MODULE__
 

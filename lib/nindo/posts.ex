@@ -1,5 +1,7 @@
 defmodule Nindo.Posts do
-  @moduledoc false
+  @moduledoc """
+    Create and manage posts
+  """
 
   alias NinDB.{Database, Post}
   import Nindo.Core
@@ -13,9 +15,22 @@ defmodule Nindo.Posts do
     Database.get(Post, id)
   end
 
+  @doc """
+    Get posts by specific property.
+
+    Get posts from the database by either author_id or datetime.
+
+  ## Examples
+
+      iex> Nindo.Posts.get(:user, 13)
+      iex> Nindo.Posts.get(:latest, 50)
+      iex> Nindo.Posts.get(:newest, 30)
+
+  """
   def get(:user, author_id) do
     Database.get_by(:author, Post, author_id)
   end
+  def get(:latest, limit), do: get(:newest, limit)
   def get(:newest, limit) do
     Database.get_all(Post, limit)
   end
