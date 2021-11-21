@@ -50,7 +50,7 @@ defmodule Nindo.Feeds do
     |> Enum.map(fn user -> Task.async(fn ->
       cache(user)
     end) end)
-    |> Task.await_many()
+    |> Task.await_many(:infinity)
   end
 
   def cache(user) do

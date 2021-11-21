@@ -54,7 +54,7 @@ defmodule Nindo.RSS do
         }
       end)
     end)
-    |> Task.await_many()
+    |> Task.await_many(30000)
   end
 
   def atom_to_rss(source) do
@@ -103,7 +103,7 @@ defmodule Nindo.RSS do
         |> generate_posts(source)
 
       end) end)
-      |> Task.await_many()
+      |> Task.await_many(30000)
       |> List.flatten()
 
     user_posts =
@@ -118,7 +118,7 @@ defmodule Nindo.RSS do
         end)
 
       end) end)
-      |> Task.await_many()
+      |> Task.await_many(30000)
       |> List.flatten()
 
     posts =
