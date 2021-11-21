@@ -7,6 +7,12 @@ defmodule Nindo.MixProject do
     elixir: "~> 1.12",
     start_permanent: Mix.env() == :prod,
     deps: deps(),
+    name: "Nindo",
+    source_url: "https://github.com/RobinBoers/Nindo2",
+    docs: [
+      main: "readme",
+      extras: ["README.md"]
+    ],
   ]
 
   def application, do: [
@@ -23,5 +29,6 @@ defmodule Nindo.MixProject do
     {:httpoison, "~> 1.8"},
     {:calendar, "~> 1.0.0"},
     {:jason, "~> 1.2"},
+    {:cachex, "~> 3.4"},
   ]
 end

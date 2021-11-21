@@ -1,7 +1,9 @@
 defmodule Nindo.Feeds do
-  @moduledoc false
+  @moduledoc """
+    Manage sources and RSS feeds
+  """
 
-  alias Nindo.{Accounts, FeedAgent}
+  alias Nindo.{Accounts, FeedAgent, RSS}
   alias NinDB.{Database, Account}
 
   def add(feed, user) do
@@ -39,7 +41,12 @@ defmodule Nindo.Feeds do
 
   # Caching feeds
 
-  def cache_feed() do
+  @doc """
+    Cache the entire feed for all users. Includes RSS sources and followed users.
+
+    Loops trough all users in the database and runs `cache/1` for each.
+  """
+  def cache_user_feeds() do
     # Start lookup table for user feeds
     DynamicSupervisor.start_child(
         Nindo.Supervisor,
@@ -53,6 +60,34 @@ defmodule Nindo.Feeds do
     |> Task.await_many(:infinity)
   end
 
+  @doc """
+    Cache all RSS sources in the background.
+
+    Loops trough all sources in the database, and for each source cache it's items using Cachex. Entries are saved as standalone items in the cache with a tuple as key: `{source, title, datetime}`.
+  """
+  def cache_rss_feeds() do
+    for user <- Database.list(Account) do
+      Enum.map(user.feeds, fn source -> Task.async(fn ->
+          feed = RSS.parse_feed(source["feed"], source["type"])
+
+          items =
+            Enum.map(feed["items"], fn entry ->
+              IO.inspect {source["feed"], entry["title"], entry["pub_date"]}
+              {{source["feed"], entry["title"], entry["pub_date"]}, entry}
+            end)
+
+          Cachex.put_many(:rss, items)
+        end)
+      end)
+    end
+  end
+
+  @doc """
+    Cache the entire feed for a single user.
+
+    Loops trough all sources and followed users and caches their items using Nindo.FeedAgent
+    Can be called on its own, but is almost always called when starting Nindo via cache_user_feeds/1
+  """
   def cache(user) do
     username = user.username
     feeds = user.feeds
@@ -69,7 +104,16 @@ defmodule Nindo.Feeds do
     end
   end
 
-  def update_agent(user) do
+  @deprecated "Use update_cache/1 instead"
+  def update_agent(user), do: update_cache(user)
+
+  @doc """
+    Update cached feed for user.
+
+    Gets the PID from FeedAgent and updates the FeedAgent feed using it.
+    Called when changes to sources are made, and just when the feed needs to reload.
+  """
+  def update_cache(user) do
     Task.async(fn ->
       user
       |> FeedAgent.get_pid()

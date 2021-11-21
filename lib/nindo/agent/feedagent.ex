@@ -17,7 +17,7 @@ defmodule Nindo.FeedAgent do
 
   ### Lookup mode
 
-    FeedAgent is only started once in lookup mode, in `Nindo.Feeds.cache_user_feed/0`
+    FeedAgent is only started once in lookup mode, in `Nindo.Feeds.cache_user_feeds/0`
     In lookup mode it stores the pid for every agent started in cache mode. It can then be called to get the pid for a specific username.
 
   """
@@ -44,7 +44,7 @@ defmodule Nindo.FeedAgent do
   end
 
   def update(pid) do
-    Agent.update(pid, &RSS.fetch_posts/1)
+    Agent.update(pid, &RSS.fetch_posts/1, :infinity)
   end
 
   # Lookup for user feeds
@@ -60,7 +60,7 @@ defmodule Nindo.FeedAgent do
   def add_user(username, pid) do
     Agent.update(@me, fn users ->
       Map.put(users, username, pid)
-    end)
+    end, :infinity)
   end
 
   # Child spec
