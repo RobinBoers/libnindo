@@ -50,7 +50,7 @@ defmodule Nindo.RSS do
           title: entry["title"],
           link: entry["link"],
           type: source["type"],
-          icon: source["icon"]
+          source: source
         }
       end)
     end)
