@@ -90,19 +90,23 @@ defmodule Nindo.RSS do
   def generate_posts(feed, source \\ @default_source) do
     feed["items"]
     |> Enum.map(fn entry -> Task.async(fn ->
-        %{
-          author: feed["title"],
-          body: HtmlSanitizeEx.no_images(entry["description"]),
-          datetime: from_rfc822(entry["pub_date"]),
-          image: entry["media"]["thumbnail"]["attrs"]["url"],
-          title: entry["title"],
-          link: entry["link"],
-          type: source["type"],
-          source: source
-        }
+        generate_post(feed, source, entry)
       end)
     end)
     |> Task.await_many(30000)
+  end
+
+  def generate_post(feed, source, entry) do
+    %{
+      author: feed["title"],
+      body: HtmlSanitizeEx.no_images(entry["description"]),
+      datetime: from_rfc822(entry["pub_date"]),
+      image: entry["media"]["thumbnail"]["attrs"]["url"],
+      title: entry["title"],
+      link: entry["link"],
+      type: source["type"],
+      source: source
+    }
   end
 
   @doc """
