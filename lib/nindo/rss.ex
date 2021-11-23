@@ -81,7 +81,7 @@ defmodule Nindo.RSS do
   @doc """
     Generate list of posts
 
-    Given a parsed feed and source, generate a map that resembles a NinDB.Post struct for each item in the feed.
+    Given a parsed feed and source, generate a map that resembles a `NinDB.Post` struct for each item in the feed. It also caches that value using Cachex with key: `{url, title, datetime}`.
 
     If no source is given, default to:
 
@@ -90,23 +90,22 @@ defmodule Nindo.RSS do
   def generate_posts(feed, source \\ @default_source) do
     feed["items"]
     |> Enum.map(fn entry -> Task.async(fn ->
-        generate_post(feed, source, entry)
+        post = %{
+          author: feed["title"],
+          body: HtmlSanitizeEx.no_images(entry["description"]),
+          datetime: from_rfc822(entry["pub_date"]),
+          image: entry["media"]["thumbnail"]["attrs"]["url"],
+          title: entry["title"],
+          link: entry["link"],
+          type: source["type"],
+          source: source
+        }
+
+        Cachex.put(:rss, {source["feed"], entry["title"], from_rfc822(entry["pub_date"])}, post)
+        post
       end)
     end)
     |> Task.await_many(30000)
-  end
-
-  def generate_post(feed, source, entry) do
-    %{
-      author: feed["title"],
-      body: HtmlSanitizeEx.no_images(entry["description"]),
-      datetime: from_rfc822(entry["pub_date"]),
-      image: entry["media"]["thumbnail"]["attrs"]["url"],
-      title: entry["title"],
-      link: entry["link"],
-      type: source["type"],
-      source: source
-    }
   end
 
   @doc """
@@ -172,6 +171,10 @@ defmodule Nindo.RSS do
 
     Used in FeedAgent to generate user feeds. Takes a tuple containing a username and the list of previous posts as an argument and returns a new tuple with the username and a new list of posts generated using sources and followed users from that account.
 
+    It also caches the parsed feeds using Cachex with the URI as key.
+
+  ## Parameters
+
     `{username, posts}`
   """
   def fetch_posts({username, _}) do
@@ -181,9 +184,10 @@ defmodule Nindo.RSS do
       account.feeds
       |> Enum.map(fn source -> Task.async(fn ->
 
-        source["feed"]
-        |> parse_feed(source["type"])
-        |> generate_posts(source)
+        feed = parse_feed(source["feed"], source["type"])
+
+        Cachex.put(:rss, source["feed"], feed)
+        generate_posts(feed, source)
 
       end) end)
       |> Task.await_many(30000)

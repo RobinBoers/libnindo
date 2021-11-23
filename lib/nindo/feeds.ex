@@ -28,12 +28,12 @@ defmodule Nindo.Feeds do
     `{url, title, datetime}`
 
     Where the datetime is an Elixir naive datetime.
+
+    The caching itself is done in `Nindo.RSS.fetch_posts/1` and `Nindo.RSS.generate_posts/2`.
   """
 
-  alias Nindo.{Accounts, FeedAgent, RSS}
+  alias Nindo.{Accounts, FeedAgent}
   alias NinDB.{Database, Account}
-
-  import Nindo.Core
 
   def add(feed, user) do
     feeds = user.feeds
@@ -76,8 +76,16 @@ defmodule Nindo.Feeds do
     Loops trough all users in the database and runs `cache/1` for each. It also caches all RSS sources using Cachex.
   """
   def cache_feeds() do
-    cache_user_feeds()
-    cache_rss_feeds()
+    DynamicSupervisor.start_child(
+        Nindo.Supervisor,
+        FeedAgent.child_spec()
+    )
+
+    Database.list(Account)
+    |> Enum.map(fn user -> Task.async(fn ->
+      cache(user)
+    end) end)
+    |> Task.await_many(:infinity)
   end
 
   ## Caching user feeds
@@ -88,7 +96,7 @@ defmodule Nindo.Feeds do
     Loops trough all sources and followed users and caches their items using Nindo.FeedAgent
     Can be called on its own, but is almost always called when starting Nindo via cache_feeds/1
   """
-  def cache_user(user) do
+  def cache(user) do
     username = user.username
     feeds = user.feeds
 
@@ -123,59 +131,27 @@ defmodule Nindo.Feeds do
 
   ## Caching external feeds
 
+  @doc """
+    Get parsed feed from cache
+
+    Takes a URI and gets the parsed feed from the cache.
+  """
   def get_feed(url) do
     {:ok, feed} = Cachex.get(:rss, url)
     feed
   end
 
+  @doc """
+    Get post from cache
+
+    Takes a URI, title and datetime and returns a map that resembles the `NinDB.Post` struct.
+  """
   def get_post(url, title, datetime) do
     {:ok, post} = Cachex.get(:rss, {url, title, datetime})
     post
   end
 
-  @doc """
-    Cache a source.
-
-    Caches all individual posts and also the entire parsed XML feed using Cachex.
-  """
-  def cache_source(source) do
-    feed = RSS.parse_feed(source["feed"], source["type"])
-
-    items =
-      Enum.map(feed["items"], fn entry ->
-        {
-          {source["feed"], entry["title"], from_rfc822(entry["pub_date"])},
-          RSS.generate_post(feed, source, entry)
-        }
-      end)
-
-    Cachex.put(:rss, source["feed"], feed)
-    Cachex.put_many(:rss, items)
-  end
-
   # Private methods
-
-  defp cache_user_feeds() do
-    DynamicSupervisor.start_child(
-        Nindo.Supervisor,
-        FeedAgent.child_spec()
-    )
-
-    Database.list(Account)
-    |> Enum.map(fn user -> Task.async(fn ->
-      cache_user(user)
-    end) end)
-    |> Task.await_many(:infinity)
-  end
-
-  defp cache_rss_feeds() do
-    for user <- Database.list(Account) do
-      Enum.map(user.feeds, fn source -> Task.async(fn ->
-          cache_source(source)
-        end)
-      end)
-    end
-  end
 
   defp empty_to_nil(map) do
     map
