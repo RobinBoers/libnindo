@@ -39,6 +39,16 @@ defmodule Nindo.Core do
     DateTime.to_naive(datetime)
   end
 
+  def from_string(datetime) do
+    [date, time] = String.split(datetime, " ")
+
+    {:ok, date} = Date.from_iso8601(date)
+    {:ok, time} = Time.from_iso8601(time)
+    {:ok, datetime} = NaiveDateTime.new(date, time)
+
+    datetime
+  end
+
   # User and session managment
 
   def logged_in?(conn) do
