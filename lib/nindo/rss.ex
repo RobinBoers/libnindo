@@ -129,7 +129,7 @@ defmodule Nindo.RSS do
   def generate_channel(user) do
     RSS.channel(
       "#{Format.display_name(user.username)}'s feed · Nindo",
-      "https://nindo.net/user/#{user.username}",
+      "https://nindo.xyz/user/#{user.username}",
       user.description,
       to_rfc822(datetime()),
       "en-us"
@@ -151,8 +151,8 @@ defmodule Nindo.RSS do
         post.title,
         post.body,
         to_rfc822(post.datetime),
-        "https://nindo.net/post/#{post.id}",
-        "https://nindo.net/post/#{post.id}"
+        "https://nindo.xyz/post/#{post.id}",
+        "https://nindo.xyz/post/#{post.id}"
       )
     end)
   end
