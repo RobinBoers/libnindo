@@ -88,7 +88,9 @@ defmodule Nindo.FeedAgent do
   end
 
   def update(pid) do
-    Agent.update(pid, &RSS.fetch_posts/1, :infinity)
+    Task.async(fn ->
+      Agent.update(pid, &RSS.fetch_posts/1, :infinity)
+    end)
   end
 
   # Lookup for user feeds
