@@ -59,6 +59,7 @@ defmodule Nindo.Core do
     Accounts.get conn.private.plug_session["user_id"]
   end
 
-  def debug_mode(), do: true
+  def debug_mode(), do: false
+    # To use mix: Mix.env() in [:dev, :test]
 
 end
