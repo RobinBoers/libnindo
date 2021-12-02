@@ -2,7 +2,7 @@ defmodule Nindo.FeedAgent do
   @moduledoc """
     Cache and update homepage feeds
 
-      The FeedAgent caches the homepage feed for every user in the database. It automatically starts when starting Nindo using a Task in `Nindo.Application`.
+    The FeedAgent caches the homepage feed for every user in the database. It automatically starts when starting Nindo using a Task in `Nindo.Application`.
 
     It has 2 modes:
 

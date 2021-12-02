@@ -14,12 +14,3 @@ A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) i
   - Display name
 
 *Every users posts can be shared via a RSS feed and RSS can be included in your feed.
-
-## Applications
-
-This version of Nindo consists of a few applications:
-
-- NinDB: Managing database, changesets and schemas
-- Nindo: Managing accounts, posts and all the other crap
-- NindoPhx: Web client for Nindo
-- NindoText: Terminal client for Nindo

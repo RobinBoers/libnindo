@@ -8,6 +8,26 @@ defmodule Nindo.Feeds do
     - Follow/unfollow users
     - Caching
 
+  ## Feeds
+
+    The sources itself are stored in in a list that is stored under the `:feeds` key in the database. It can look a bit like this:
+
+      [
+        %{
+          "feed" => "webdevelopment-en-meer.blogspot.com",
+          "icon" => "https://webdevelopment-en-meer.blogspot.com/favicon.ico",
+          "title" => "Webdevelopment-En-Meer",
+          "type" => "blogger"
+        }
+      ]
+
+    Every source has:
+
+    - **Feed:** the URI to the blog or site of the feed
+    - **Icon:** the URI to the favicon for that site
+    - **Title:** the title/name of the feed
+    - **Type:** the feed type (either blogger, youtube, wordpress, atom or custom)
+
   ## Caching
 
     Caching can be split up into two catagories:

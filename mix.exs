@@ -11,7 +11,7 @@ defmodule Nindo.MixProject do
     source_url: "https://github.com/RobinBoers/Nindo2",
     docs: [
       main: "readme",
-      extras: ["README.md"]
+      extras: ["README.md", "ABOUT.md", "CLIENTS.md"]
     ],
   ]
 
@@ -30,5 +30,6 @@ defmodule Nindo.MixProject do
     {:calendar, "~> 1.0.0"},
     {:jason, "~> 1.2"},
     {:cachex, "~> 3.4"},
+    {:ex_doc, "~> 0.24", only: :dev, runtime: false},
   ]
 end
