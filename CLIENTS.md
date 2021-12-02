@@ -25,6 +25,7 @@ Text-based terminal client for Nindo.
 ### Features
 
 - Posts
+- Search
 - Basic comments
 - Account management
 - Follow users
