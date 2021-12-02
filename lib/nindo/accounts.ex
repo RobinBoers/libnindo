@@ -37,7 +37,7 @@ defmodule Nindo.Accounts do
     Database.list(Account)
   end
   def list(limit) do
-    Database.get_all(Account, limit)
+    Database.list(Account, limit)
   end
 
   def search(query) do

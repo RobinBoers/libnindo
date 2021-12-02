@@ -32,7 +32,7 @@ defmodule Nindo.Posts do
   end
   def get(:latest, limit), do: get(:newest, limit)
   def get(:newest, limit) do
-    Database.get_all(Post, limit)
+    Database.list(Post, limit)
   end
 
   def exists?(id), do: get(id) !== nil
