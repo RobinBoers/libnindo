@@ -33,8 +33,25 @@ defmodule Nindo.Accounts do
     Database.get_by(:username, Account, username)
   end
 
+  def list(:infinity) do
+    Database.list(Account)
+  end
   def list(limit) do
     Database.get_all(Account, limit)
+  end
+
+  def search(query) do
+    Account
+    |> Database.list()
+    |> Enum.filter(fn account ->
+      cond do
+        account.username != nil and String.contains?(account.username, query) -> true
+        String.first(query) == "@" and account.username == String.slice(query, 1..-1) -> true
+        account.description != nil and String.contains?(account.description, query) -> true
+        account.display_name != nil and String.contains?(account.display_name, query) -> true
+        true -> false
+      end
+    end)
   end
 
   def change(key, value, user) do
