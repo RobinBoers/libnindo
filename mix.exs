@@ -24,7 +24,7 @@ defmodule Nindo.MixProject do
     {:bcrypt_elixir, "~> 2.3.0"},
     {:nin_db, path: "../nindb"},
     {:fast_rss, path: "../fast_rss"},
-    {:html_sanitize_ex, path: "../html_sanitize_ex"},
+    {:html_sanitize_ex, git: "git://github.com/RobinBoers/html-sanitize-ex.git"},
     {:rss, "~> 0.2.1"},
     {:httpoison, "~> 1.8"},
     {:calendar, "~> 1.0.0"},
