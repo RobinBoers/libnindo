@@ -1,4 +1,4 @@
-# Nindo
+# Overview
 
 A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) in Elixir using Phoenix for the web version and Ecto + PostgreSQL for the backend.
 
@@ -13,4 +13,9 @@ A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) i
   - Description
   - Display name
 
-*Every users posts can be shared via a RSS feed and RSS can be included in your feed.
+*Every users posts can be shared via an RSS feed and external RSS can be included in your feed.
+
+## Summary
+
+- [About](ABOUT.md)
+- [Clients](CLIENTS.md)
