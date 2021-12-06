@@ -22,7 +22,7 @@ defmodule Nindo.MixProject do
 
   defp deps, do: [
     {:bcrypt_elixir, "~> 2.3.0"},
-    {:nin_db, path: "../nindb"},
+    {:nin_db, git: "git://github.com/RobinBoers/nindo-nindb.git"},
     {:fast_rss, git: "git://github.com/RobinBoers/fast_rss.git"},
     {:html_sanitize_ex, git: "git://github.com/RobinBoers/html-sanitize-ex.git"},
     {:rss, "~> 0.2.1"},
