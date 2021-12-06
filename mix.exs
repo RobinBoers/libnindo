@@ -8,7 +8,7 @@ defmodule Nindo.MixProject do
     start_permanent: Mix.env() == :prod,
     deps: deps(),
     name: "Nindo",
-    source_url: "https://github.com/RobinBoers/Nindo2",
+    source_url: "https://github.com/RobinBoers/nindo-elixir",
     docs: [
       main: "readme",
       extras: ["README.md", "ABOUT.md", "CLIENTS.md"]
