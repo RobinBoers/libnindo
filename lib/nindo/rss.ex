@@ -84,12 +84,15 @@ defmodule Nindo.RSS do
 
     Given a parsed feed and source, generate a map that resembles a `NinDB.Post` struct for each item in the feed. It also caches that value using Cachex with key: `{url, title, datetime}`.
 
+    Currently only returns first five posts to limit memory allocation issues in production.
+
     If no source is given, default to:
 
       %{"type" => "custom", "icon" => "/images/rss.png"}
   """
   def generate_posts(feed, source \\ @default_source) do
     feed["items"]
+    |> Enum.take(5) # remove to get entire feed
     |> Enum.map(fn entry -> Task.async(fn ->
         post = %{
           author: feed["title"],
