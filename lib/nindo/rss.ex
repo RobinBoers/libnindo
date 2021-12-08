@@ -8,6 +8,7 @@ defmodule Nindo.RSS do
   import Nindo.Core
 
   @default_source %{"type" => "custom", "icon" => "/images/rss.png"}
+  @base_url "nindo.geheimesite.nl"
 
   # Methods to parse feeds
 
@@ -129,7 +130,7 @@ defmodule Nindo.RSS do
   def generate_channel(user) do
     RSS.channel(
       "#{Format.display_name(user.username)}'s feed · Nindo",
-      "https://nindo.xyz/user/#{user.username}",
+      "https://#{@base_url}/user/#{user.username}",
       user.description,
       to_rfc822(datetime()),
       "en-us"
@@ -151,8 +152,8 @@ defmodule Nindo.RSS do
         post.title,
         post.body,
         to_rfc822(post.datetime),
-        "https://nindo.xyz/post/#{post.id}",
-        "https://nindo.xyz/post/#{post.id}"
+        "https://#{@base_url}/post/#{post.id}",
+        "https://#{@base_url}/post/#{post.id}"
       )
     end)
   end
