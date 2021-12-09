@@ -11,6 +11,7 @@ defmodule Nindo.MixProject do
     source_url: "https://github.com/RobinBoers/nindo-elixir",
     docs: [
       main: "readme",
+      logo: "logo.png",
       extras: ["README.md", "ABOUT.md", "CLIENTS.md"]
     ],
   ]
