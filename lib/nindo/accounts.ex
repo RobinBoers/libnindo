@@ -121,8 +121,8 @@ defmodule Nindo.Accounts do
       cond do
         account.username != nil and String.contains?(account.username, query) -> true
         String.first(query) == "@" and account.username == String.slice(query, 1..-1) -> true
-        account.description != nil and String.contains?(account.description, query) -> true
-        account.display_name != nil and String.contains?(account.display_name, query) -> true
+        account.description != nil and String.contains?(String.downcase(account.description), query) -> true
+        account.display_name != nil and String.contains?(String.downcase(account.display_name), query) -> true
         true -> false
       end
     end)
