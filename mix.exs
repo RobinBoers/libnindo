@@ -12,7 +12,9 @@ defmodule Nindo.MixProject do
     docs: [
       main: "readme",
       logo: "logo.png",
-      extras: ["README.md", "ABOUT.md", "CLIENTS.md"]
+      api_reference: false,
+      extras: ["README.md", "ABOUT.md", "CLIENTS.md"],
+      source_ref: "master"
     ],
   ]
 
