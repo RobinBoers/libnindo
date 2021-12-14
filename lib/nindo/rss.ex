@@ -153,7 +153,7 @@ defmodule Nindo.RSS do
     |> Enum.map(fn post ->
       RSS.item(
         post.title,
-        post.body,
+        markdown(post.body),
         to_rfc822(post.datetime),
         "https://#{@base_url}/post/#{post.id}",
         "https://#{@base_url}/post/#{post.id}"

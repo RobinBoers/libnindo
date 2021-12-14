@@ -13,6 +13,17 @@ defmodule Nindo.Core do
   """
   def safe(txt), do: {:safe, txt}
 
+  @doc """
+    Convert markdown into safe HTML
+  """
+  def markdown(text) do
+    text
+    |> String.split("\n")
+    |> Earmark.as_html()
+    |> strip_ok()
+    |> HtmlSanitizeEx.basic_html()
+  end
+
   # Date and time
 
   @doc """
@@ -94,4 +105,6 @@ defmodule Nindo.Core do
   def debug_mode?(), do: false
     # To use mix: Mix.env() in [:dev, :test]
 
+  defp strip_ok({:ok, data}), do: data
+  defp strip_ok({:ok, data, _}), do: data
 end

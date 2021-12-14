@@ -34,5 +34,6 @@ defmodule Nindo.MixProject do
     {:jason, "~> 1.2"},
     {:cachex, "~> 3.4"},
     {:ex_doc, "~> 0.24", only: :dev, runtime: false},
+    {:earmark, "~> 1.4"},
   ]
 end
