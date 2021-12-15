@@ -88,15 +88,21 @@ defmodule Nindo.Core do
   @doc """
     Check if the user is logged in
   """
-  def logged_in?(conn) do
+  def logged_in?(conn) when conn.private != nil do
     conn.private.plug_session["logged_in"] == true
+  end
+  def logged_in?(session) do
+    session["logged_in"] == true
   end
 
   @doc """
     Get currently logged in user
   """
-  def user(conn) do
+  def user(conn) when conn.private != nil do
     Accounts.get conn.private.plug_session["user_id"]
+  end
+  def user(session) do
+    Accounts.get session["user_id"]
   end
 
   @doc """
