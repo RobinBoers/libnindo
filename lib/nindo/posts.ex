@@ -23,6 +23,25 @@ defmodule Nindo.Posts do
   end
 
   @doc """
+    Validate new post
+
+    Same as `new/4`, but doesn't put make changes to the database. Can be used to validate user input before posting.
+
+    _Note: this is an experimental feature only meant for use in the new LiveView branch on NindoPhx._
+
+  ## Examples
+
+      iex> import Nindo.Core
+      iex> Nindo.Posts.validate("Example post", "Lorem ipsum dolor sit amet.", nil, user())
+      {:error, error}
+  """
+  def validate(title, body, image, user) do
+    %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
+    |> Database.validate(Post)
+    |> Map.put(:action, :insert)
+  end
+
+  @doc """
     Get a post by its ID
 
   ## Examples
