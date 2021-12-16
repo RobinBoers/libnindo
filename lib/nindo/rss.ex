@@ -8,6 +8,7 @@ defmodule Nindo.RSS do
   import Nindo.Core
 
   @default_source %{"type" => "custom", "icon" => "/images/rss.png"}
+  @default_feed %{"items" => []}
   @base_url "nindo.geheimesite.nl"
 
   # Methods to parse feeds
@@ -73,9 +74,9 @@ defmodule Nindo.RSS do
       {:ok, %HTTPoison.Response{body: body}} ->
         case FastRSS.parse(body) do
           {:ok, feed} -> feed
-          error -> error
+          _error -> @default_feed
         end
-      error -> error
+      _error -> @default_feed
     end
   end
 
