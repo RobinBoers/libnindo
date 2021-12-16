@@ -111,6 +111,23 @@ defmodule Nindo.Core do
   def debug_mode?(), do: false
     # To use mix: Mix.env() in [:dev, :test]
 
+  @doc """
+    Format changeset errors to be used in error messages.
+
+    Takes a changeset error as the argument and formats it. Returns `%{title: "the field", message: "what went wrong"}`.
+  """
+  def format_error(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Enum.reduce(opts, msg, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+    |> Enum.reduce("", fn {k, v}, _acc ->
+      joined_errors = Enum.join(v, "; ")
+      %{title: "#{k}", message: String.capitalize joined_errors}
+    end)
+  end
+
   defp strip_ok({:ok, data}), do: data
   defp strip_ok({:ok, data, _}), do: data
 end
