@@ -99,10 +99,16 @@ defmodule Nindo.Core do
     Get currently logged in user
   """
   def user(conn) when conn.private != nil do
-    Accounts.get conn.private.plug_session["user_id"]
+    case conn.private.plug_session["user_id"] do
+      nil -> nil
+      id -> Accounts.get id
+    end
   end
   def user(session) do
-    Accounts.get session["user_id"]
+    case session["user_id"] do
+      nil -> nil
+      id -> Accounts.get id
+    end
   end
 
   @doc """
