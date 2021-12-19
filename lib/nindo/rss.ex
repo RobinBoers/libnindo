@@ -74,9 +74,9 @@ defmodule Nindo.RSS do
       {:ok, %HTTPoison.Response{body: body}} ->
         case FastRSS.parse(body) do
           {:ok, feed} -> feed
-          _error -> @default_feed
+          error -> error
         end
-      _error -> @default_feed
+      error -> error
     end
   end
 
@@ -189,7 +189,10 @@ defmodule Nindo.RSS do
       account.feeds
       |> Enum.map(fn source -> Task.async(fn ->
 
-        feed = parse_feed(source["feed"], source["type"])
+        feed = case parse_feed(source["feed"], source["type"]) do
+          {:error, _} -> @default_feed
+          f -> f
+        end
 
         Cachex.put(:rss, source["feed"], feed)
         generate_posts(feed, source)
