@@ -128,9 +128,9 @@ defmodule Nindo.Core do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
-    |> Enum.reduce("", fn {_k, v}, _acc ->
+    |> Enum.reduce("", fn {k, v}, _acc ->
       joined_errors = Enum.join(v, "; ")
-      String.capitalize joined_errors
+      String.capitalize("#{k}: #{joined_errors}")
     end)
   end
 
