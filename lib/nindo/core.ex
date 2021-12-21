@@ -134,6 +134,9 @@ defmodule Nindo.Core do
     end)
   end
 
-  defp strip_ok({:ok, data}), do: data
-  defp strip_ok({:ok, data, _}), do: data
+  @doc """
+    Remove the :ok part of an ok- or errortuple.
+  """
+  def strip_ok({:ok, data}), do: data
+  def strip_ok({:ok, data, _}), do: data
 end
