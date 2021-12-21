@@ -89,10 +89,10 @@ defmodule Nindo.Core do
     Check if the user is logged in
   """
   def logged_in?(conn) when conn.private != nil do
-    conn.private.plug_session["logged_in"] == true
+    conn.private.plug_session["logged_in?"] == true
   end
   def logged_in?(session) do
-    session["logged_in"] == true
+    session["logged_in?"] == true
   end
 
   @doc """
