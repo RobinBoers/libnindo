@@ -246,25 +246,35 @@ defmodule Nindo.RSS do
 
     @key "AIzaSyCDm7TOdKFCZPEzPcPR9OPu_DwcR9TzYOk"
 
+    @doc """
+    Invidious instance to use for embeds and more.
+    """
+    def instance() do
+      "https://yewtu.be/"
+    end
+
+    @doc """
+    Convert legacy channel URI or custom channel URI to the default format.
+    """
     def to_channel_link(url) do
       [_, type, channel] = String.split(url, "/")
 
       channel_id =
         case type do
-          "c" -> YouTube.get_from_custom(url)
-          "user" -> YouTube.get_from_username(channel)
+          "c" -> get_from_custom(url)
+          "user" -> get_from_username(channel)
           _ -> channel
         end
 
       "www.youtube.com/channel/#{channel_id}"
     end
 
-    def get_from_custom(source) do
+    defp get_from_custom(source) do
       data = parse_json("https://youtube.googleapis.com/youtube/v3/search?q=#{source}&part=id&type=channel&fields=items(id(kind,channelId))&max_results=1&key=#{@key}")
       hd(data["items"])["id"]["channelId"]
     end
 
-    def get_from_username(username) do
+    defp get_from_username(username) do
       data = parse_json("https://www.googleapis.com/youtube/v3/channels?forUsername=#{username}&part=id&key=#{@key}")
       hd(data["items"])["id"]
     end
