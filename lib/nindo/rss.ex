@@ -250,7 +250,7 @@ defmodule Nindo.RSS do
     Invidious instance to use for embeds and more.
     """
     def instance() do
-      "https://yewtu.be/"
+      "https://yewtu.be"
     end
 
     @doc """
