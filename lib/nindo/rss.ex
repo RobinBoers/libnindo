@@ -259,7 +259,7 @@ defmodule Nindo.RSS do
       "feed" => url,
       "type" => type,
       "icon" => detect_favicon(
-        URI.parse("https://" <> url).authority
+        URI.parse("https://" <> URI.decode(url)).authority
       )
     }
   end
