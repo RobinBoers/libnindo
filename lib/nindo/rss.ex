@@ -9,7 +9,6 @@ defmodule Nindo.RSS do
 
   @default_source %{"type" => "custom", "icon" => "/images/rss.png"}
   @default_feed %{"items" => []}
-  @base_url "nindo.geheimesite.nl"
 
   # Methods to parse feeds
 
@@ -62,6 +61,11 @@ defmodule Nindo.RSS do
   def detect_favicon(url) do
     "https://" <> url <> "/favicon.ico"
   end
+
+  @doc """
+    URI of the Nindo instance were using (root domain without protocol)
+  """
+  def base_url(), do: "nindo.geheimesite.nl"
 
   @doc """
     Fetch and parse RSS feeds
@@ -134,7 +138,7 @@ defmodule Nindo.RSS do
   def generate_channel(user) do
     channel(
       "#{Format.display_name(user.username)}'s feed · Nindo",
-      "https://#{@base_url}/user/#{user.username}",
+      "https://#{base_url()}/user/#{user.username}",
       user.description
     )
   end
@@ -177,8 +181,8 @@ defmodule Nindo.RSS do
       title,
       markdown(body),
       to_rfc822(datetime),
-      "https://#{@base_url}/post/#{id}",
-      "https://#{@base_url}/post/#{id}"
+      "https://#{base_url()}/post/#{id}",
+      "https://#{base_url()}/post/#{id}"
     )
   end
 
