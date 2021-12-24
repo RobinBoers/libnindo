@@ -269,7 +269,9 @@ defmodule Nindo.RSS do
   defmodule YouTube do
     @moduledoc false
 
-    @key "AIzaSyCDm7TOdKFCZPEzPcPR9OPu_DwcR9TzYOk"
+    defp key() do
+      System.get_env("YT_KEY")
+    end
 
     @doc """
     Invidious instance to use for embeds and more.
@@ -295,12 +297,12 @@ defmodule Nindo.RSS do
     end
 
     defp get_from_custom(source) do
-      data = parse_json("https://youtube.googleapis.com/youtube/v3/search?q=#{source}&part=id&type=channel&fields=items(id(kind,channelId))&max_results=1&key=#{@key}")
+      data = parse_json("https://youtube.googleapis.com/youtube/v3/search?q=#{source}&part=id&type=channel&fields=items(id(kind,channelId))&max_results=1&key=#{key()}")
       hd(data["items"])["id"]["channelId"]
     end
 
     defp get_from_username(username) do
-      data = parse_json("https://www.googleapis.com/youtube/v3/channels?forUsername=#{username}&part=id&key=#{@key}")
+      data = parse_json("https://www.googleapis.com/youtube/v3/channels?forUsername=#{username}&part=id&key=#{key()}")
       hd(data["items"])["id"]
     end
 
