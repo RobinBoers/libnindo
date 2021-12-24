@@ -132,10 +132,21 @@ defmodule Nindo.RSS do
     Used in `generate_feed/2`.
   """
   def generate_channel(user) do
-    RSS.channel(
+    channel(
       "#{Format.display_name(user.username)}'s feed · Nindo",
       "https://#{@base_url}/user/#{user.username}",
-      user.description,
+      user.description
+    )
+  end
+
+  @doc """
+    Delegates to `RSS.channel/5`.
+  """
+  def channel(title, link, desc) do
+    RSS.channel(
+      title,
+      link,
+      desc,
       to_rfc822(datetime()),
       "en-us"
     )
