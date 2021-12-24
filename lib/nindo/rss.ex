@@ -137,7 +137,7 @@ defmodule Nindo.RSS do
   """
   def generate_channel(user) do
     channel(
-      "#{Format.display_name(user.username)}'s feed · Nindo",
+      "#{Format.display_name(user)}'s feed · Nindo",
       "https://#{base_url()}/user/#{user.username}",
       user.description
     )
