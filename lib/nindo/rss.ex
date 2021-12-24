@@ -166,6 +166,7 @@ defmodule Nindo.RSS do
   def generate_entries(user) do
     :user
     |> Posts.get(user.id)
+    |> Enum.reverse()
     |> Enum.map(&generate_entry(&1.title, &1.body, &1.datetime, &1.id))
   end
 
