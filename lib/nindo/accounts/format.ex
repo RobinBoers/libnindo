@@ -13,16 +13,30 @@ defmodule Nindo.Format do
     end
   end
 
-  def description(username) do
+  def description(username) when is_binary(username) do
     case Accounts.get_by(:username, username).description do
       nil             ->    safe @not_available
       description     ->    description
     end
   end
 
-  def display_name(username) do
+  def description(account) do
+    case account.description do
+      nil             ->    safe @not_available
+      description     ->    description
+    end
+  end
+
+  def display_name(username) when is_binary(username) do
     case Accounts.get_by(:username, username).display_name do
       nil             ->    String.capitalize username
+      display_name    ->    display_name
+    end
+  end
+
+  def display_name(account) do
+    case account.display_name do
+      nil             ->    String.capitalize account.username
       display_name    ->    display_name
     end
   end
