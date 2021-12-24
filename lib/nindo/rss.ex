@@ -144,22 +144,31 @@ defmodule Nindo.RSS do
   @doc """
     Generate entries
 
-    Given a user (`NinDB.Account`), generate a list of RSS items from their posts.
+    Given a user (`NinDB.Account`), generate a list of RSS items from their posts. Uses `generate_entry/4`.
 
     Used in `generate_feed/2`.
   """
   def generate_entries(user) do
     :user
     |> Posts.get(user.id)
-    |> Enum.map(fn post ->
-      RSS.item(
-        post.title,
-        markdown(post.body),
-        to_rfc822(post.datetime),
-        "https://#{@base_url}/post/#{post.id}",
-        "https://#{@base_url}/post/#{post.id}"
-      )
-    end)
+    |> Enum.map(&generate_entry(&1.title, &1.body, &1.datetime, &1.id))
+  end
+
+  @doc """
+    Generate a single RSS feed entrie.
+
+    Given a title, body, datetime and post id, generate a RSS feed item.
+
+    Used in `generate_entries/1`.
+  """
+  def generate_entry(title, body, datetime, id) do
+    RSS.item(
+      title,
+      markdown(body),
+      to_rfc822(datetime),
+      "https://#{@base_url}/post/#{id}",
+      "https://#{@base_url}/post/#{id}"
+    )
   end
 
   @doc """
