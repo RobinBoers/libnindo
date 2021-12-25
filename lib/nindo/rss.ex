@@ -65,7 +65,7 @@ defmodule Nindo.RSS do
   @doc """
     URI of the Nindo instance were using (root domain without protocol)
   """
-  def base_url(), do: "nindo.geheimesite.nl"
+  def base_url(), do: Application.get_env(:nindo, :base_url)
 
   @doc """
     Fetch and parse RSS feeds
@@ -277,7 +277,7 @@ defmodule Nindo.RSS do
     Invidious instance to use for embeds and more.
     """
     def instance() do
-      "https://yewtu.be"
+      Application.get_env(:nindo, :invidious_instance)
     end
 
     @doc """

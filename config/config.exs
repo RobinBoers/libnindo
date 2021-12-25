@@ -16,3 +16,7 @@ config :nin_db, NinDB.Vault,
       iv_length: 12
     }
   ]
+
+config :nindo,
+  base_url: "nindo.geheimesite.nl",
+  invidious_instance: "https://yewtu.be"
