@@ -73,7 +73,7 @@ defmodule Nindo.FeedAgent do
   # General helpers
 
   def get(pid) do
-    Agent.get(pid, fn data -> data end)
+    Agent.get(pid, fn data -> data end, :infinity)
   end
 
   # Feed managment
