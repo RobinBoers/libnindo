@@ -28,7 +28,7 @@ defmodule Nindo.MixProject do
     {:nin_db, github: "RobinBoers/nindo-nindb"},
     {:fast_rss, github: "RobinBoers/fast_rss"},
     {:html_sanitize_ex, github: "RobinBoers/html-sanitize-ex"},
-    {:rss, "~> 0.2.1", github: "denispeplin/elixir-rss"},
+    {:rss, "~> 0.2.1", github: "BennyHallett/elixir-rss"},
     {:httpoison, "~> 1.8"},
     {:calendar, "~> 1.0.0"},
     {:jason, "~> 1.2"},
