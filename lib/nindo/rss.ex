@@ -3,11 +3,10 @@ defmodule Nindo.RSS do
     Parse and generate RSS feeds
   """
 
-  alias Nindo.{Accounts, Posts, Format}
+  alias Nindo.{Accounts, Posts, Format, Source}
   alias Nindo.RSS.YouTube
   import Nindo.Core
 
-  @default_source %{"type" => "custom", "icon" => "/images/rss.png"}
   @default_feed %{"items" => []}
 
   # Methods to parse feeds
@@ -95,7 +94,7 @@ defmodule Nindo.RSS do
 
       %{"type" => "custom", "icon" => "/images/rss.png"}
   """
-  def generate_posts(feed, source \\ @default_source) do
+  def generate_posts(feed, source \\ %Source{}) do
     feed["items"]
     |> Enum.take(5) # remove to get entire feed
     |> Enum.map(fn entry -> Task.async(fn ->
@@ -106,11 +105,11 @@ defmodule Nindo.RSS do
           image: entry["media"]["thumbnail"]["attrs"]["url"],
           title: entry["title"],
           link: entry["link"],
-          type: source["type"],
+          type: source.type,
           source: source
         }
 
-        Cachex.put(:rss, {source["feed"], entry["title"], from_rfc822(entry["pub_date"])}, post)
+        Cachex.put(:rss, {source.feed, entry["title"], from_rfc822(entry["pub_date"])}, post)
         post
       end)
     end)
@@ -213,13 +212,14 @@ defmodule Nindo.RSS do
     rss_posts =
       account.feeds
       |> Enum.map(fn source -> Task.async(fn ->
+        source = Source.from_map(source)
 
-        feed = case parse_feed(source["feed"], source["type"]) do
+        feed = case parse_feed(source.feed, source.type) do
           {:error, _} -> @default_feed
           f -> f
         end
 
-        Cachex.put(:rss, source["feed"], feed)
+        Cachex.put(:rss, source.feed, feed)
         generate_posts(feed, source)
 
       end) end)
