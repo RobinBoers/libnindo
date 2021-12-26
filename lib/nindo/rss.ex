@@ -97,10 +97,11 @@ defmodule Nindo.RSS do
     feed["items"]
     |> Enum.take(5) # remove to get entire feed
     |> Enum.map(fn entry -> Task.async(fn ->
-        %Post{
+        id = :erlang.phash2(entry["title"])
+        post = %Post{
           author: feed["title"],
           body: HtmlSanitizeEx.basic_html(entry["description"]),
-          id: :erlang.phash2(entry["title"]), # only here because Phoenix requires it in the params
+          id: id,
           datetime: from_rfc822(entry["pub_date"]),
           image: entry["media"]["thumbnail"]["attrs"]["url"],
           title: entry["title"],
@@ -108,6 +109,8 @@ defmodule Nindo.RSS do
           type: source.type,
           source: source
         }
+        Cachex.put(:rss, "#{source.id}:#{id}", post)
+        post
       end)
     end)
     |> Task.await_many(30000)
