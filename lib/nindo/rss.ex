@@ -4,7 +4,7 @@ defmodule Nindo.RSS do
   """
 
   alias NinDB.{Source}
-  alias Nindo.{Accounts, Posts, Format, RSS.YouTube}
+  alias Nindo.{Accounts, Posts, Post, Format, RSS.YouTube}
 
   import Nindo.Core
 
@@ -87,19 +87,17 @@ defmodule Nindo.RSS do
   @doc """
     Generate list of posts
 
-    Given a parsed feed and source, generate a map that resembles a `NinDB.Post` struct for each item in the feed. It also caches that value using Cachex with key: `{url, title, datetime}`.
+    Given a parsed feed and source, generate a `Nindo.Post` struct that resembles a `NinDB.Post` struct for each item in the feed.
 
     Currently only returns first five posts to limit memory allocation issues in production.
 
-    If no source is given, default to:
-
-      %{"type" => "custom", "icon" => "/images/rss.png"}
+    If no source is given, default to NinDB.Source{}
   """
   def generate_posts(feed, source \\ %Source{}) do
     feed["items"]
     |> Enum.take(5) # remove to get entire feed
     |> Enum.map(fn entry -> Task.async(fn ->
-        post = %{
+        %Post{
           author: feed["title"],
           body: HtmlSanitizeEx.basic_html(entry["description"]),
           datetime: from_rfc822(entry["pub_date"]),
@@ -109,9 +107,6 @@ defmodule Nindo.RSS do
           type: source.type,
           source: source
         }
-
-        Cachex.put(:rss, {source.feed, entry["title"], from_rfc822(entry["pub_date"])}, post)
-        post
       end)
     end)
     |> Task.await_many(30000)
