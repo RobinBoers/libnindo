@@ -7,6 +7,7 @@ defmodule Nindo.Post do
   import Nindo.Core
 
   defstruct author: "Unknown",
+            id: nil,
             body: nil,
             datetime: datetime(),
             image: nil,

@@ -100,6 +100,7 @@ defmodule Nindo.RSS do
         %Post{
           author: feed["title"],
           body: HtmlSanitizeEx.basic_html(entry["description"]),
+          id: :erlang.phash2(entry["title"]), # only here because Phoenix requires it in the params
           datetime: from_rfc822(entry["pub_date"]),
           image: entry["media"]["thumbnail"]["attrs"]["url"],
           title: entry["title"],
