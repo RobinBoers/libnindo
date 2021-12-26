@@ -256,6 +256,7 @@ defmodule Nindo.RSS do
   def generate_source(feed, type, url) do
     %Source{
       title: feed["title"],
+      id: :erlang.phash2(url),
       feed: url,
       type: type,
       icon: detect_favicon(
