@@ -253,9 +253,9 @@ defmodule Nindo.RSS do
 
     Given a parsed RSS feed, feed type and base URI, construct a map that can be stored in account schema under the feeds key and saved in the database.
   """
-  def generate_source(feed, type, url) do
+  def generate_source(title, type, url) do
     %Source{
-      title: feed["title"],
+      title: title,
       id: :erlang.phash2(url),
       feed: url,
       type: type,
