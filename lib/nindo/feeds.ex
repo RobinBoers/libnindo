@@ -30,8 +30,6 @@ defmodule Nindo.Feeds do
 
   ## Caching
 
-  source_webdevnmeer = Nindo.RSS.generate_source(%{"title" => "webdevelopment-En-Meer"}, "blogger", "webdevelopment-en-meer.blogspot.com")
-
     Caching can be split up into two catagories:
 
     - User feeds
