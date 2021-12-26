@@ -1,13 +1,13 @@
 import Config
 
-config :nin_db,
+config :nindb,
    ecto_repos: [NinDB.Repo]
 
-config :nin_db, NinDB.Repo,
+config :nindb, NinDB.Repo,
   database: "nindb",
   hostname: "localhost"
 
-config :nin_db, NinDB.Vault,
+config :nindb, NinDB.Vault,
   ciphers: [
    default: {
       Cloak.Ciphers.AES.GCM,

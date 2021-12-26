@@ -3,8 +3,9 @@ defmodule Nindo.RSS do
     Parse and generate RSS feeds
   """
 
-  alias Nindo.{Accounts, Posts, Format, Source}
-  alias Nindo.RSS.YouTube
+  alias NinDB.{Source}
+  alias Nindo.{Accounts, Posts, Format, RSS.YouTube}
+
   import Nindo.Core
 
   @default_feed %{"items" => []}
@@ -125,7 +126,7 @@ defmodule Nindo.RSS do
     "https://feedmix.novaclic.com/atom2rss.php?source=" <> URI.encode(source)
   end
 
-  # Methods to generate feeds
+  # Methods to generate RSS feeds
 
   @doc """
     Generate RSS channel
@@ -193,7 +194,7 @@ defmodule Nindo.RSS do
   """
   defdelegate generate_feed(channel, items), to: RSS, as: :feed
 
-  # Methods to construct Nindo feeds
+  # Methods to generate Nindo feeds
 
   @doc """
     Fetch and parse posts for an user
@@ -210,9 +211,8 @@ defmodule Nindo.RSS do
     account = Accounts.get_by(:username, username)
 
     rss_posts =
-      account.feeds
+      account.sources
       |> Enum.map(fn source -> Task.async(fn ->
-        source = Source.from_map(source)
 
         feed = case parse_feed(source.feed, source.type) do
           {:error, _} -> @default_feed

@@ -10,14 +10,14 @@ defmodule Nindo.Feeds do
 
   ## Feeds
 
-    The sources itself are stored in in a list that is stored under the `:feeds` key in the database. It can look a bit like this:
+    The sources itself are stored in a list of `NinDB.Source` structs under the `:sources` key in the database. It can look a bit like this:
 
       [
-        %{
-          "feed" => "webdevelopment-en-meer.blogspot.com",
-          "icon" => "https://webdevelopment-en-meer.blogspot.com/favicon.ico",
-          "title" => "Webdevelopment-En-Meer",
-          "type" => "blogger"
+        %NinDB.Source{
+          feed: "webdevelopment-en-meer.blogspot.com",
+          icon: "https://webdevelopment-en-meer.blogspot.com/favicon.ico",
+          title: "Webdevelopment-En-Meer",
+          type: "blogger"
         }
       ]
 
@@ -30,6 +30,8 @@ defmodule Nindo.Feeds do
 
   ## Caching
 
+  source_webdevnmeer = Nindo.RSS.generate_source(%{"title" => "webdevelopment-En-Meer"}, "blogger", "webdevelopment-en-meer.blogspot.com")
+
     Caching can be split up into two catagories:
 
     - User feeds
@@ -39,15 +41,11 @@ defmodule Nindo.Feeds do
 
     User feeds are the feeds that users can construct themselves and appear on their homepage. They consist of sources and followed users/accounts. User feeds are cached using `Nindo.FeedAgent`.
 
-  ### External/RSS feeds
+  ### Sources
 
-    External feeds are the sources displayed in the homepage feed, but as standalone feeds. They can be viewed by clicking on a source in the sources tab. For each external feed added, both the entire parsed feed and every post alone will be cached.
+    External feeds are the sources displayed in the homepage feed, but as standalone feeds. They can be viewed by clicking on a source in the sources tab. For each external feed added, the parsed feed will be cached, but only the first five articles.
 
-    The entire feed will be cached using Cachex with the URI as key. The standalone posts are saved with a tuple as key:
-
-    `{url, title, datetime}`
-
-    Where the datetime is an Elixir naive datetime.
+    The entire feed will be cached using Cachex with the URI as key in the `:rss` cache.
 
     The caching itself is done in `Nindo.RSS.fetch_posts/1` and `Nindo.RSS.generate_posts/2`.
   """
@@ -56,18 +54,17 @@ defmodule Nindo.Feeds do
   alias NinDB.{Database, Account}
 
   def add(feed, user) do
-    feeds = user.feeds
+    feeds = user.sources
     if feed not in feeds do
-      Accounts.change(:feeds, [feed | feeds], user)
+      Accounts.change(:sources, feeds ++ [feed], user)
     end
     update_cache(user)
   end
 
   def remove(feed, user) do
-    feed = empty_to_nil(feed)
-    feeds = user.feeds
+    feeds = user.sources
     if feed in feeds do
-      Accounts.change(:feeds, feeds -- [feed], user)
+      Accounts.change(:sources, feeds -- [feed], user)
     end
     update_cache(user)
   end
@@ -116,27 +113,23 @@ defmodule Nindo.Feeds do
     Loops trough all sources and followed users and caches their items using Nindo.FeedAgent
     Can be called on its own, but is almost always called when starting Nindo via cache_feeds/1
   """
-  def cache(user) do
-    username = user.username
-    feeds = user.feeds
+  def cache(user) when user.sources != nil do
+    {:ok, pid} =
+      DynamicSupervisor.start_child(
+        Nindo.Supervisor,
+        FeedAgent.child_spec(user.username)
+      )
 
-    if feeds != nil do
-      {:ok, pid} =
-        DynamicSupervisor.start_child(
-          Nindo.Supervisor,
-          FeedAgent.child_spec(username)
-        )
-
-        FeedAgent.add_user(username, pid)
-        FeedAgent.update(pid)
-    end
+      FeedAgent.add_user(user.username, pid)
+      FeedAgent.update(pid)
   end
+  def cache(_), do: nil
 
   @deprecated "Use update_cache/1 instead"
   def update_agent(user), do: update_cache(user)
 
   @doc """
-    Update cached feed for user.
+    Update cache.
 
     Gets the PID from FeedAgent and updates the FeedAgent feed using it.
     Called when changes to sources are made, and just when the feed needs to reload.
@@ -159,27 +152,6 @@ defmodule Nindo.Feeds do
   def get_feed(url) do
     {:ok, feed} = Cachex.get(:rss, url)
     feed
-  end
-
-  @doc """
-    Get post from cache
-
-    Takes a URI, title and datetime and returns a map that resembles the `NinDB.Post` struct.
-  """
-  def get_post(url, title, datetime) do
-    {:ok, post} = Cachex.get(:rss, {url, title, datetime})
-    post
-  end
-
-  # Private methods
-
-  defp empty_to_nil(map) do
-    map
-    |> Enum.map(fn
-      {key, val} when val === "" -> {key, nil}
-      {key, val} -> {key, val}
-    end)
-    |> Enum.into(%{})
   end
 
 end

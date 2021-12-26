@@ -6,16 +6,16 @@ defmodule Nindo.Accounts do
 
     Every account is a `NinDB.Account` struct with these properties:
 
-    | item           | key          | description                                                        |
-    |----------------|--------------|--------------------------------------------------------------------|
-    | Username       | username     | Unique identifier. All lowercase, no spaces.                       |
-    | Display name   | display_name | Your name. `nil` by default. Can contain spaces and unicode chars. |
-    | Biography      | description  | Your biography. Can also contain unicode chars and spaces.         |
-    | Emailaddress   | email        | Valid and unique emailaddress. Encrypted using `Cloak`.            |
-    | Sources        | feeds        | List of sources for your feed. Empty by default.                   |
-    | Followed users | following    | List of the usernames of users you follow. Empty by default.       |
-    | Password       | password     | Your password encrypted using `Bcrypt`.                            |
-    | Bcrypt salt    | salt         | Salt used to encrypt your password.                                |
+    | item           | key          | description                                                                      |
+    |----------------|--------------|----------------------------------------------------------------------------------|
+    | Username       | username     | Unique identifier. All lowercase, no spaces.                                     |
+    | Display name   | display_name | Your name. `nil` by default. Can contain spaces and unicode chars.               |
+    | Biography      | description  | Your biography. Can also contain unicode chars and spaces.                       |
+    | Emailaddress   | email        | Valid and unique emailaddress. Encrypted using `Cloak`.                          |
+    | Sources        | sources      | List of sources for your feed. Empty by default. Uses the `NinDB.Source` struct. |
+    | Followed users | following    | List of the usernames of users you follow. Empty by default.                     |
+    | Password       | password     | Your password encrypted using `Bcrypt`.                                          |
+    | Bcrypt salt    | salt         | Salt used to encrypt your password.                                              |
   """
 
   alias NinDB.{Account, Database}
