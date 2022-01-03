@@ -1,7 +1,7 @@
 defmodule Nindo.RSS do
   @moduledoc false
 
-  alias Nindo.{Format}
+  alias Nindo.{Format, Posts}
 
   import Nindo.Core
 
@@ -18,8 +18,8 @@ defmodule Nindo.RSS do
   end
 
   def generate_entries(user) do
-    :user
-    |> Posts.get(user.id)
+    user.id
+    |> Posts.get_by_author()
     |> Enum.reverse()
     |> Enum.map(&generate_entry(&1.title, &1.body, &1.datetime, &1.id))
   end
