@@ -14,17 +14,18 @@ defmodule Nindo.Comments do
     new(comment.post_id, title, body, user)
   end
 
-  def get(id) do
-    Database.get(Comment, id)
+  def get(comment_id) do
+    Database.get(Comment, comment_id)
   end
-  def get(:user, id) do
-    Database.get_by(:author, Comment, id)
+
+  def get_by_author(author_id) do
+    Database.get_by(:author, Comment, author_id)
   end
-  def get(:parent, id) do
-    Database.get_by(:parent, Comment, id)
+  def get_by_parent(parent_id) do
+    Database.get_by(:parent, Comment, parent_id)
   end
-  def get(:post, id) do
-    Database.get_by(:post, Comment, id)
+  def get_by_post(post_id) do
+    Database.get_by(:post, Comment, post_id)
   end
 
 end

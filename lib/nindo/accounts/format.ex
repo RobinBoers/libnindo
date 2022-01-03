@@ -6,7 +6,7 @@ defmodule Nindo.Format do
 
   @not_available "<i>No account description available.</i>"
 
-  def profile_picture(username) when is_binary(username), do: profile_picture Accounts.get_by(:username, username)
+  def profile_picture(username) when is_binary(username), do: profile_picture Accounts.get_by_username(username)
   def profile_picture(account) do
     case account.profile_picture do
       nil             ->    default_profile_picture(account.username)
@@ -14,7 +14,7 @@ defmodule Nindo.Format do
     end
   end
 
-  def description(username) when is_binary(username), do: description Accounts.get_by(:username, username)
+  def description(username) when is_binary(username), do: description Accounts.get_by_username(username)
   def description(account) do
     case account.description do
       nil             ->    safe @not_available
@@ -22,7 +22,7 @@ defmodule Nindo.Format do
     end
   end
 
-  def display_name(username) when is_binary(username), do: display_name Accounts.get_by(:username, username)
+  def display_name(username) when is_binary(username), do: display_name Accounts.get_by_username(username)
   def display_name(account) do
     case account.display_name do
       nil             ->    String.capitalize account.username
