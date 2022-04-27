@@ -1,155 +1,71 @@
 defmodule Nindo.Feeds do
-  @moduledoc """
-    Manage sources and RSS feeds
+  @moduledoc false
 
-    This module handles all feed/source related stuff:
+  alias Nindo.{Accounts, Posts, YouTube, Sources}
 
-    - Add/remove sources
-    - Follow/unfollow users
-    - Caching
+  @empty_feed %{"title" => "Unknown feed", "items" => []}
 
-  ## Feeds
-
-    The sources itself are stored in a list of `NinDB.Source` structs under the `:sources` key in the database. It can look a bit like this:
-
-      [
-        %NinDB.Source{
-          feed: "webdevelopment-en-meer.blogspot.com",
-          icon: "https://webdevelopment-en-meer.blogspot.com/favicon.ico",
-          title: "Webdevelopment-En-Meer",
-          type: "blogger"
-        }
-      ]
-
-    Every source has:
-
-    - **Feed:** the URI to the blog or site of the feed
-    - **Icon:** the URI to the favicon for that site
-    - **Title:** the title/name of the feed
-    - **Type:** the feed type (either blogger, youtube, wordpress, atom or custom)
-
-  ## Caching
-
-    Caching can be split up into two catagories:
-
-    - User feeds
-    - Sources
-
-  ### User feeds
-
-    User feeds are the feeds that users can construct themselves and appear on their homepage. They consist of sources and followed users/accounts. User feeds are cached using `Nindo.FeedAgent`.
-
-  ### Sources
-
-    External feeds are the sources displayed in the homepage feed, but as standalone feeds. They can be viewed by clicking on a source in the sources tab. For each external feed added, the parsed feed will be cached, but only the first five articles.
-
-    The entire feed will be cached using Cachex with the URI as key in the `:rss` cache.
-
-    The caching itself is done in `Nindo.RSS.fetch_posts/1` and `Nindo.RSS.generate_posts/2`.
-  """
-
-  alias Nindo.{Accounts, FeedAgent}
-  alias NinDB.{Database, Account}
-
-  def add(feed, user) do
-    feeds = user.sources
-    if feed not in feeds do
-      Accounts.change(:sources, feeds ++ [feed], user)
+  def detect(type, url) do
+    case type do
+      :blogger   -> "https://#{url}/feeds/posts/default?alt=rss&max-results=5"
+      :wordpress -> "https://#{url}/feed/"
+      :youtube   -> atom YouTube.rss_feed(url)
+      :atom      -> atom "https://#{url}"
+      _          -> "https://#{url}"
     end
-    update_cache(user)
   end
 
-  def remove(feed, user) do
-    feeds = user.sources
-    if feed in feeds do
-      Accounts.change(:sources, feeds -- [feed], user)
-    end
-    update_cache(user)
+  defp atom(source) do
+    "https://feedmix.novaclic.com/atom2rss.php?source=" <> URI.encode(source)
   end
 
-  def follow(person, user) do
-    following = user.following
-    if person not in following do
-      Accounts.change(:following, [person | following], user)
+  @spec parse(String.t()) :: map | {:error, any()}
+  def parse(url) do
+    case HTTPoison.get(url) do
+      {:ok, %HTTPoison.Response{body: body}} ->
+        case FastRSS.parse(body) do
+          {:ok, feed} -> feed
+          error -> error
+        end
+      error -> error
     end
-    update_cache(user)
   end
 
-  def unfollow(person, user) do
-    following = user.following
-    if person in following do
-      Accounts.change(:following, following -- [person], user)
-    end
-    update_cache(user)
+  def fetch(user) do
+    rss_posts = fetch_external(user.sources)
+    user_posts = fetch_users(user.following)
+
+    [user_posts | rss_posts]
+    |> Enum.sort_by(&(&1.datetime), {:desc, NaiveDateTime})
   end
 
-  # Caching feeds
+  defp fetch_external(sources) do
+    sources
+    |> Enum.map(fn source -> Task.async(fn ->
+      url = detect(source.feed, source.type)
 
-  @doc """
-    Cache the entire feed for all users. Includes RSS sources and followed users.
+      feed = case parse(url) do
+        {:error, _} -> @empty_feed
+        f -> f
+      end
 
-    Loops trough all users in the database and runs `cache/1` for each. It also caches all RSS sources using Cachex.
-  """
-  def cache_feeds() do
-    DynamicSupervisor.start_child(
-        Nindo.Supervisor,
-        FeedAgent.child_spec()
-    )
+      Sources.generate_posts(feed, source)
 
-    Database.list(Account)
-    |> Enum.map(fn user -> Task.async(fn ->
-      cache(user)
     end) end)
-    |> Task.await_many(:infinity)
+    |> Task.await_many(30000)
+    |> List.flatten()
   end
 
-  ## Caching user feeds
+  defp fetch_users(following) do
+    following
+    |> Enum.map(fn username -> Task.async(fn ->
+      account = Accounts.get_by_username(username)
+      posts = Posts.get_by_author(account.id)
 
-  @doc """
-    Cache the entire feed for a single user.
+      Enum.map(posts, &Map.from_struct(&1))
 
-    Loops trough all sources and followed users and caches their items using Nindo.FeedAgent
-    Can be called on its own, but is almost always called when starting Nindo via cache_feeds/1
-  """
-  def cache(user) when user.sources != nil do
-    {:ok, pid} =
-      DynamicSupervisor.start_child(
-        Nindo.Supervisor,
-        FeedAgent.child_spec(user.username)
-      )
-
-      FeedAgent.add_user(user.username, pid)
-      FeedAgent.update(pid)
+    end) end)
+    |> Task.await_many(30000)
+    |> List.flatten()
   end
-  def cache(_), do: nil
-
-  @deprecated "Use update_cache/1 instead"
-  def update_agent(user), do: update_cache(user)
-
-  @doc """
-    Update cache.
-
-    Gets the PID from FeedAgent and updates the FeedAgent feed using it.
-    Called when changes to sources are made, and just when the feed needs to reload.
-  """
-  def update_cache(user) do
-    Task.async(fn ->
-      user
-      |> FeedAgent.get_pid()
-      |> FeedAgent.update()
-    end)
-  end
-
-  ## Caching external feeds
-
-  @doc """
-    Get parsed feed from cache
-
-    Takes a URI and gets the parsed feed from the cache.
-  """
-  def get_feed(url) do
-    {:ok, feed} = Cachex.get(:rss, url)
-    feed
-  end
-
 end

@@ -1,21 +1,21 @@
+<img src="https://raw.githubusercontent.com/RobinBoers/nindo-elixir/master/screenshot.png" align="right">
+
 # Overview
 
-A 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) in Elixir using Phoenix for the web version and Ecto + PostgreSQL for the backend.
+The backend for NindoPhx: an 90% feature complete rewrite of [Nindo](https://github.com/RobinBoers/Nindo) in Elixir.
 
 ## Features
 
-- Encrypted data
-- Posts with images
-- RSS support*
+- Markdown support
 - Comments
-- Profile data:
-  - Avatar
-  - Description
-  - Display name
+- Dark mode
+- Readable
+- RSS feeds
+- REST API
+- Responsive and quick
 
-*Every users posts can be shared via an RSS feed and external RSS can be included in your feed.
+## Resources
 
-## Summary
-
-- [About](ABOUT.md)
-- [Clients](CLIENTS.md)
+- [Documentation](https://docs.geheimesite.nl/nindo-elixir)
+- [Source](https://github.com/RobinBoers/nindo-elixir)
+- [NindoPhx](https://docs.geheimesite.nl/nindo-phx)

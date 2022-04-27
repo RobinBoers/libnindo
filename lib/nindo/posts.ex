@@ -1,89 +1,27 @@
 defmodule Nindo.Posts do
-  @moduledoc """
-    Create and manage posts
-  """
+  @moduledoc false
 
   alias NinDB.{Database, Post}
   import Nindo.Core
 
-  @doc """
-    Create new post
-
-    Write a post and publish it.
-
-  ## Examples
-
-      iex> import Nindo.Core
-      iex> Nindo.Posts.new("Example post", "Lorem ipsum dolor sit amet.", nil, user())
-      {:ok, %NinDB.Post{}}
-  """
   def new(title, body, image, user) do
     %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
     |> Database.put(Post)
   end
 
-  @doc """
-    Validate new post
-
-    Same as `new/4`, but doesn't put make changes to the database. Can be used to validate user input before posting.
-
-    _Note: this is an experimental feature only meant for use in the new LiveView branch on NindoPhx._
-
-  ## Examples
-
-      iex> import Nindo.Core
-      iex> Nindo.Posts.validate("Example post", "Lorem ipsum dolor sit amet.", nil, user())
-      {:error, error}
-  """
-  def validate(title, body, image, user) do
-    %{author_id: user.id, title: title, body: body, image: image, datetime: datetime()}
-    |> Database.validate(Post)
-    |> Map.put(:action, :insert)
-  end
-
-  @doc """
-    Get a post by its ID
-
-  ## Examples
-
-      iex> Nindo.Posts.get(7)
-      %NinDB.Post{}
-  """
   def get(id) do
     Database.get(Post, id)
   end
 
-  @doc """
-    Get posts by specific property
-
-    Get posts from the database by either author_id or datetime.
-
-    Note that `:latest` and `:newest` do the same thing, but `:latest` is preferred as `:newest` is deprecated.
-
-  ## Examples
-
-      iex> Nindo.Posts.get(:user, 13)
-      iex> Nindo.Posts.get(:latest, 50)
-      iex> Nindo.Posts.get(:newest, 30)
-  """
-  def get(:user, author_id) do
-    Database.get_by(:author, Post, author_id)
-  end
-  def get(:newest, limit), do: get(:latest, limit)
-  def get(:latest, limit) do
+  def get_latest(limit) do
     Database.list(Post, limit)
   end
 
-  @doc """
-    Check if posts exists
+  def get_by_author(author_id) do
+    Database.get_by(:author, Post, author_id)
+  end
 
-    Given a ID, check if that posts exists. Returns either true or false.
-
-  ## Examples
-
-      iex> Nindo.Posts.exists?(1)
-      false
-  """
-  def exists?(id), do: get(id) !== nil
-
+  def exists?(id) do
+    get(id) !== nil
+  end
 end

@@ -2,7 +2,7 @@ defmodule Nindo.Application do
   @moduledoc false
 
   use Application
-  import Nindo.Feeds, only: [cache_feeds: 0]
+  alias Nindo.Cache
 
   @opts [
     name: Nindo.Supervisor,
@@ -11,7 +11,7 @@ defmodule Nindo.Application do
 
   @children [
     {Cachex, name: :rss},
-    Task.child_spec(&cache_feeds/0),
+    Task.child_spec(&Cache.start/0),
   ]
 
   def start(_type, _args) do
