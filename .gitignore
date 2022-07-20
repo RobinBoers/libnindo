@@ -21,3 +21,6 @@ nindo-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Docs
+/doc/
