@@ -16,6 +16,6 @@ The backend for NindoPhx: an 90% feature complete rewrite of [Nindo](https://git
 
 ## Resources
 
-- [Documentation](https://docs.geheimesite.nl/nindo-elixir)
-- [Source](https://github.com/RobinBoers/nindo-elixir)
-- [NindoPhx](https://docs.geheimesite.nl/nindo-phx)
+- [Documentation](https://nindo-social.github.io/backened)
+- [Source](https://github.com/nindo-social/backend)
+- [NindoPhx](https://nindo-social.github.io/nindo)
