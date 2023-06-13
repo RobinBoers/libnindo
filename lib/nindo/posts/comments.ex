@@ -5,7 +5,14 @@ defmodule Nindo.Comments do
   import Nindo.Core
 
   def new(id, title, body, user, parent \\ nil) do
-    %{post_id: id, author_id: user.id, parent: parent, title: title, body: body, datetime: datetime()}
+    %{
+      post_id: id,
+      author_id: user.id,
+      parent: parent,
+      title: title,
+      body: body,
+      datetime: datetime()
+    }
     |> Database.put(Comment)
   end
 
@@ -21,11 +28,12 @@ defmodule Nindo.Comments do
   def get_by_author(author_id) do
     Database.get_by(:author, Comment, author_id)
   end
+
   def get_by_parent(parent_id) do
     Database.get_by(:parent, Comment, parent_id)
   end
+
   def get_by_post(post_id) do
     Database.get_by(:post, Comment, post_id)
   end
-
 end

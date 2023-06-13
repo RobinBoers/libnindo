@@ -19,7 +19,7 @@ defmodule Nindo.Core do
   # Date and time
 
   def now() do
-    human_datetime datetime()
+    human_datetime(datetime())
   end
 
   def datetime() do
@@ -62,6 +62,7 @@ defmodule Nindo.Core do
   def logged_in?(conn) when conn.private != nil do
     conn.private.plug_session["logged_in?"] == true
   end
+
   def logged_in?(session) do
     session["logged_in?"] == true
   end
@@ -69,13 +70,14 @@ defmodule Nindo.Core do
   def user(conn) when conn.private != nil do
     case conn.private.plug_session["user_id"] do
       nil -> nil
-      id -> Accounts.get id
+      id -> Accounts.get(id)
     end
   end
+
   def user(session) do
     case session["user_id"] do
       nil -> nil
-      id -> Accounts.get id
+      id -> Accounts.get(id)
     end
   end
 

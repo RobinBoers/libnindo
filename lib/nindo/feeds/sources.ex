@@ -6,6 +6,7 @@ defmodule Nindo.Sources do
 
   def add(source, user) do
     sources = user.sources
+
     if source not in sources do
       Accounts.change(:sources, sources ++ [source], user)
     end
@@ -13,6 +14,7 @@ defmodule Nindo.Sources do
 
   def remove(source, user) do
     sources = user.sources
+
     if source in sources do
       Accounts.change(:sources, sources -- [source], user)
     end

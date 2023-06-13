@@ -39,9 +39,13 @@ defmodule Nindo.FeedAgent do
   end
 
   def add_user(username, pid) do
-    Agent.update(@me, fn users ->
-      Map.put(users, username, pid)
-    end, :infinity)
+    Agent.update(
+      @me,
+      fn users ->
+        Map.put(users, username, pid)
+      end,
+      :infinity
+    )
   end
 
   # Child spec
@@ -59,5 +63,4 @@ defmodule Nindo.FeedAgent do
       start: {@me, :start_link, []}
     }
   end
-
 end

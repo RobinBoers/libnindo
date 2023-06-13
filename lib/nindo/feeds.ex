@@ -7,11 +7,11 @@ defmodule Nindo.Feeds do
 
   def detect(type, url) do
     case type do
-      :blogger   -> "https://#{url}/feeds/posts/default?alt=rss&max-results=5"
+      :blogger -> "https://#{url}/feeds/posts/default?alt=rss&max-results=5"
       :wordpress -> "https://#{url}/feed/"
-      :youtube   -> atom YouTube.rss_feed(url)
-      :atom      -> atom "https://#{url}"
-      _          -> "https://#{url}"
+      :youtube -> atom(YouTube.rss_feed(url))
+      :atom -> atom("https://#{url}")
+      _ -> "https://#{url}"
     end
   end
 
@@ -27,7 +27,9 @@ defmodule Nindo.Feeds do
           {:ok, feed} -> feed
           error -> error
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -36,35 +38,38 @@ defmodule Nindo.Feeds do
     user_posts = fetch_users(user.following)
 
     [user_posts | rss_posts]
-    |> Enum.sort_by(&(&1.datetime), {:desc, NaiveDateTime})
+    |> Enum.sort_by(& &1.datetime, {:desc, NaiveDateTime})
   end
 
   defp fetch_external(sources) do
     sources
-    |> Enum.map(fn source -> Task.async(fn ->
-      url = detect(source.feed, source.type)
+    |> Enum.map(fn source ->
+      Task.async(fn ->
+        url = detect(source.feed, source.type)
 
-      feed = case parse(url) do
-        {:error, _} -> @empty_feed
-        f -> f
-      end
+        feed =
+          case parse(url) do
+            {:error, _} -> @empty_feed
+            f -> f
+          end
 
-      Sources.generate_posts(feed, source)
-
-    end) end)
+        Sources.generate_posts(feed, source)
+      end)
+    end)
     |> Task.await_many(30000)
     |> List.flatten()
   end
 
   defp fetch_users(following) do
     following
-    |> Enum.map(fn username -> Task.async(fn ->
-      account = Accounts.get_by_username(username)
-      posts = Posts.get_by_author(account.id)
+    |> Enum.map(fn username ->
+      Task.async(fn ->
+        account = Accounts.get_by_username(username)
+        posts = Posts.get_by_author(account.id)
 
-      Enum.map(posts, &Map.from_struct(&1))
-
-    end) end)
+        Enum.map(posts, &Map.from_struct(&1))
+      end)
+    end)
     |> Task.await_many(30000)
     |> List.flatten()
   end

@@ -5,6 +5,7 @@ defmodule Nindo.Followers do
 
   def add(username, user) do
     following = user.following
+
     if username not in following do
       Accounts.change(:following, [username | following], user)
     end
@@ -12,6 +13,7 @@ defmodule Nindo.Followers do
 
   def remove(username, user) do
     following = user.following
+
     if username in following do
       Accounts.change(:following, following -- [username], user)
     end

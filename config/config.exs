@@ -1,7 +1,7 @@
 import Config
 
 config :nindb,
-   ecto_repos: [NinDB.Repo]
+  ecto_repos: [NinDB.Repo]
 
 config :nindb, NinDB.Repo,
   database: "nindb",
@@ -9,7 +9,7 @@ config :nindb, NinDB.Repo,
 
 config :nindb, NinDB.Vault,
   ciphers: [
-   default: {
+    default: {
       Cloak.Ciphers.AES.GCM,
       tag: "AES.GCM.V1",
       key: Base.decode64!("goQI42SEuU17EvCwQ9jdlKxDeSecXF7s02wnNwkwuEI="),

@@ -9,7 +9,6 @@ defmodule Nindo.YouTube do
     Application.get_env(:nindo, :invidious_instance)
   end
 
-
   def rss_feed(url) do
     [_youtube, _channel, channel_id] = String.split(url, "/")
     "https://www.youtube.com/feeds/videos.xml?channel_id=#{channel_id}"
@@ -29,12 +28,20 @@ defmodule Nindo.YouTube do
   end
 
   defp get_id_from_custom(source) do
-    data = parse_json("https://youtube.googleapis.com/youtube/v3/search?q=#{source}&part=id&type=channel&fields=items(id(kind,channelId))&max_results=1&key=#{key()}")
+    data =
+      parse_json(
+        "https://youtube.googleapis.com/youtube/v3/search?q=#{source}&part=id&type=channel&fields=items(id(kind,channelId))&max_results=1&key=#{key()}"
+      )
+
     hd(data["items"])["id"]["channelId"]
   end
 
   defp get_id_from_username(username) do
-    data = parse_json("https://www.googleapis.com/youtube/v3/channels?forUsername=#{username}&part=id&key=#{key()}")
+    data =
+      parse_json(
+        "https://www.googleapis.com/youtube/v3/channels?forUsername=#{username}&part=id&key=#{key()}"
+      )
+
     hd(data["items"])["id"]
   end
 
@@ -45,7 +52,9 @@ defmodule Nindo.YouTube do
           {:ok, data} -> data
           error -> error
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 end

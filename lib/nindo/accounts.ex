@@ -5,13 +5,20 @@ defmodule Nindo.Accounts do
   alias Nindo.{Auth}
 
   def new(username, password, email, image \\ nil) do
-    username = String.trim username
-    password = String.trim password
+    username = String.trim(username)
+    password = String.trim(password)
 
     salt = Auth.get_salt()
     password = Auth.hash_pass(password, salt)
 
-    %{username: username, password: password, email: email, salt: salt, profile_picture: image, feeds: []}
+    %{
+      username: username,
+      password: password,
+      email: email,
+      salt: salt,
+      profile_picture: image,
+      feeds: []
+    }
     |> Database.put(Account)
   end
 
@@ -37,6 +44,7 @@ defmodule Nindo.Accounts do
   def list() do
     Database.list(Account)
   end
+
   def list(limit) do
     Database.list(Account, limit)
   end
@@ -52,7 +60,6 @@ defmodule Nindo.Accounts do
     |> Database.list()
     |> Enum.filter(&search_matches?(&1, query))
   end
-
 
   defp password_valid?(username, password) do
     account = get_by_username(username)
@@ -84,11 +91,13 @@ defmodule Nindo.Accounts do
   end
 
   defp description_contains_query?(nil, _query), do: false
+
   defp description_contains_query?(description, query) do
     description != nil and String.contains?(String.downcase(description), query)
   end
 
   defp display_name_contains_query?(nil, _query), do: false
+
   defp display_name_contains_query?(display_name, query) do
     display_name != nil and String.contains?(String.downcase(display_name), query)
   end

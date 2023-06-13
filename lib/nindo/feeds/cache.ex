@@ -39,6 +39,7 @@ defmodule Nindo.Cache do
   defp start_user(user) do
     {:ok, pid} =
       DynamicSupervisor.start_child(Nindo.Supervisor, FeedAgent.child_spec(user.username))
+
     pid
   end
 end
